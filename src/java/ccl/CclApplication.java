@@ -2,15 +2,18 @@ package ccl;
 
 import ccl.domain.Deck;
 import ccl.constants.CclConstants.ApplicationConstants;
-
+import com.sun.tools.javac.util.StringUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CclApplication {
     private static List<String> input;
@@ -55,30 +58,45 @@ public class CclApplication {
 
     private static void appendDeckHeader(String shop) {
         for (int i = 0; i < Deck.values().length; i++) {
-            if (ApplicationConstants.active[i] && isInShop(i + 1, shop)) {
+            if (isInShop(i + 1, shop)) {
                 String deckHeader = "  " + Deck.values()[i].getName() + "\n";
                 output.append(deckHeader);
+                appendCardList(getCardList(i + 1), shop);
             }
         }
     }
     
-    private static void appendDeckList(List<String> cards) {
-
+    private static void appendCardList(List<Integer> range, String shop) {
+        String shopUID = ApplicationConstants.shopUIDs.get(shop);
+        for (int i = range.get(0); i <= range.get(1); i++) {
+            if (input.get(i).contains(shopUID)) {
+                Matcher m = Pattern.compile(".*\\*\\s\\dx\\s(.*?)([+|^]+).*").matcher(input.get(i));
+                String temp = "";
+                if (m.matches()) {
+                    int numCards = m.group(2).length() - m.group(2).replace(shopUID, "").length();
+                    temp = "    " + numCards + "x " + m.group(1) + "\n";
+                }
+                output.append(temp);
+            }
+        }
     }
 
-    private static boolean isInShop(int deckNum, String shop) {
+    private static List<Integer> getCardList(int deckNum) {
         for (int i = 0; i < input.size(); i++) {
             String line = input.get(i);
             if (line.matches(".*\\d+\\..*") && line.contains(Integer.toString(deckNum))) {
-                for (int j = i + 1; j < input.size() && !input.get(j).matches(".*\\d+\\..*"); j++) {
-                    String item = input.get(j);
-                    if (item.contains(ApplicationConstants.shopUIDs.get(shop))) {
-                        return true;
-                    }
+                int j = i + 1;
+                while (j < input.size() && !input.get(j).matches(".*\\d+\\..*")) {
+                    j++;
                 }
-                break;
+                return Arrays.asList(i, (j - 1));
             }
         }
-        return false;
+        return Arrays.asList(-1, -1);
+    }
+
+    private static boolean isInShop(int deckNum, String shop) {
+        List<Integer> range = getCardList(deckNum);
+        return (input.subList(range.get(0), range.get(1) + 1)).toString().contains((ApplicationConstants.shopUIDs.get(shop)));
     }
 }

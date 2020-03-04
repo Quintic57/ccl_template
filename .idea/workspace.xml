@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e1fa03a0-3c44-4d40-b280-14cdab36d9ec" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/java/ccl/CclApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/java/ccl/CclApplication.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,10 +35,11 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -151,26 +152,26 @@
       <screen x="0" y="23" width="1280" height="724" />
     </state>
     <state x="453" y="76" key="#com.intellij.ide.util.MemberChooser/0.23.1280.724@0.23.1280.724" timestamp="1582510863396" />
-    <state width="1218" height="159" key="GridCell.Tab.0.bottom" timestamp="1583298178043">
+    <state width="1218" height="159" key="GridCell.Tab.0.bottom" timestamp="1583307464722">
       <screen x="0" y="23" width="1280" height="724" />
     </state>
-    <state width="1218" height="159" key="GridCell.Tab.0.bottom/0.23.1280.724@0.23.1280.724" timestamp="1583298178043" />
-    <state width="1218" height="159" key="GridCell.Tab.0.center" timestamp="1583298178043">
+    <state width="1218" height="159" key="GridCell.Tab.0.bottom/0.23.1280.724@0.23.1280.724" timestamp="1583307464722" />
+    <state width="1218" height="159" key="GridCell.Tab.0.center" timestamp="1583307464721">
       <screen x="0" y="23" width="1280" height="724" />
     </state>
-    <state width="1218" height="159" key="GridCell.Tab.0.center/0.23.1280.724@0.23.1280.724" timestamp="1583298178043" />
-    <state width="1218" height="159" key="GridCell.Tab.0.left" timestamp="1583298178042">
+    <state width="1218" height="159" key="GridCell.Tab.0.center/0.23.1280.724@0.23.1280.724" timestamp="1583307464721" />
+    <state width="1218" height="159" key="GridCell.Tab.0.left" timestamp="1583307464721">
       <screen x="0" y="23" width="1280" height="724" />
     </state>
-    <state width="1218" height="159" key="GridCell.Tab.0.left/0.23.1280.724@0.23.1280.724" timestamp="1583298178042" />
-    <state width="1218" height="159" key="GridCell.Tab.0.right" timestamp="1583298178043">
+    <state width="1218" height="159" key="GridCell.Tab.0.left/0.23.1280.724@0.23.1280.724" timestamp="1583307464721" />
+    <state width="1218" height="159" key="GridCell.Tab.0.right" timestamp="1583307464722">
       <screen x="0" y="23" width="1280" height="724" />
     </state>
-    <state width="1218" height="159" key="GridCell.Tab.0.right/0.23.1280.724@0.23.1280.724" timestamp="1583298178043" />
-    <state x="128" y="23" key="SettingsEditor" timestamp="1583297477906">
+    <state width="1218" height="159" key="GridCell.Tab.0.right/0.23.1280.724@0.23.1280.724" timestamp="1583307464722" />
+    <state x="128" y="23" key="SettingsEditor" timestamp="1583303594790">
       <screen x="0" y="23" width="1280" height="724" />
     </state>
-    <state x="128" y="23" key="SettingsEditor/0.23.1280.724@0.23.1280.724" timestamp="1583297477906" />
+    <state x="128" y="23" key="SettingsEditor/0.23.1280.724@0.23.1280.724" timestamp="1583303594790" />
     <state x="319" y="217" key="com.intellij.ide.util.TipDialog" timestamp="1583290262477">
       <screen x="0" y="23" width="1280" height="724" />
     </state>
