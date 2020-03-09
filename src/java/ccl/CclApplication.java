@@ -29,9 +29,10 @@ public class CclApplication {
             String shopHeader = key + ") " + shops.get(key) + "\n";
             output.append(shopHeader);
             appendDeckHeader(shops.get(key));
-            output.append("Total: $\n");
+            output.append("Total: $\n\n");
         }
-        output.append("e) Misc\nTotal: $");
+        output.append("e) Misc\nTotal: $\n\n");
+        output.append("Grand Total: $");
         writeToFile();
     }
 

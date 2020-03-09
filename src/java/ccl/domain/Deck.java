@@ -7,19 +7,20 @@ public enum Deck {
     SYNCHRON_MASH("Synchron Mash", "2010 September", 4),
     KARAKURI_MACHINA_PLANT("KMP", "2010 September", 5),
     FUSION_HERO("Fusion HERO", "2012 March", 6),
-    DRAGONSWORN("Dragonsworn", "2012 March", 7),
+    LIGHTSWORNS("Dawn of the Lightsworns", "2014 July", 7),
     BATTERYMAN_OTK("Batteryman OTK", "2014 July", 8),
     TENGU_PLANT("Tengu Plant", "2011 March", 9),
     MACHINA_GADGETS("Machina Gadgets", "2013 March", 10),
-    BROTHERHOOD_OF_KOAKI_MEIRU("Brotherhood of KM", "2014 July", 11),
+    ROCK_STUN("Rock Stun", "2014 July", 11),
     FROG_MONARCHS("Frog Monarchs", "2014 July", 12),
     HIERATIC_SAFFIRA("Hieratic Saffira", "2014 July", 13),
     SPELLBOOK_OF_PROPHECY("Spellbook of Prophecy", "2014 July", 14),
     PACMAN_STUN("PACMAN Stun", "2012 March", 15),
     QUASAR_SYNCHRON("Quasar Synchron", "2011 September", 16),
-    MYTHIC_RULERS("Mythic Rulers", "2013 October", 17),
-    ROCK_STUN("Rock Stun", "2014 July", 18),
-    DAD_RETURN("DAD Return", "2008 March", 19);
+    CHAOS_DRAGONS("Chaos Dragons", "2012 March", 17),
+    MYTHIC_RULERS("Mythic Rulers", "2013 October", 18),
+    BROTHERHOOD_OF_KOAKI_MEIRU("Brotherhood of KM", "2014 July", 19),
+    DAD_RETURN("DAD Return", "2008 March", 20);
 
     private String name;
     private String format;
