@@ -2,11 +2,12 @@ package ccl;
 
 import ccl.domain.Deck;
 import ccl.constants.CclConstants.ApplicationConstants;
-import com.sun.tools.javac.util.StringUtils;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +31,7 @@ public class CclApplication {
             appendDeckHeader(shops.get(key));
             output.append("Total: $\n");
         }
-        output.append("e) Misc\n");
+        output.append("e) Misc\nTotal: $");
         writeToFile();
     }
 
@@ -48,7 +49,10 @@ public class CclApplication {
 
     private static void writeToFile() {
         try {
-            BufferedWriter out = new BufferedWriter(new FileWriter("src/resources/out/output.txt"));
+            LocalDate now = LocalDate.now();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            String fileName = "Report_" + dtf.format(now) + ".txt";
+            BufferedWriter out = new BufferedWriter(new FileWriter("src/resources/out/" + fileName));
             out.write(output.toString());
             out.close();
         } catch (IOException e) {
