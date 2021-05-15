@@ -18,7 +18,7 @@ public class CclConstants {
 
         public static Map<String, String> shopUIDs = new HashMap<String, String>() {{
             put("Coolstuff", "+");
-            put("Troll and Toad", "|");
+            put("Troll and Toad", "\\");
             put("TCG", "^");
             put("Barter", ";");
         }};

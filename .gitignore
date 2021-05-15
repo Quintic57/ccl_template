@@ -1,4 +1,5 @@
 *.class
 .DS_Store
-out/*
-.idea/*
+/src/resources/in/input.txt
+/src/resources/out/output.txt
+/.idea
