@@ -1,6 +1,7 @@
 package ccl.constants;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class CclConstants {
@@ -13,14 +14,14 @@ public class CclConstants {
             put("a", "Coolstuff");
             put("b", "Troll and Toad");
             put("c", "TCG");
-            put("d", "Barter");
+            put("d", "eBay");
         }};
 
-        public static Map<String, String> shopUIDs = new HashMap<String, String>() {{
+        public static Map<String, String> shopUIDs = new LinkedHashMap<String, String>() {{
             put("Coolstuff", "+");
-            put("Troll and Toad", "\\");
+            put("Troll and Toad", "/");
             put("TCG", "^");
-            put("Barter", ";");
+            put("eBay", "{");
         }};
     }
 }

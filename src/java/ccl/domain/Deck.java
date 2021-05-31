@@ -14,7 +14,7 @@ public enum Deck {
     LIGHTSWORNS("Dawn of the Lightsworns", "2014 July", 7),
     BATTERYMAN_OTK("Batteryman OTK", "2014 July", 8),
     TENGU_PLANT("Tengu Plant", "2011 March", 9),
-    MACHINA_GADGETS("Machina Gadgets", "2013 March", 10),
+    RANK_UP_GADGETS("Rank-Up Gadgets", "2014 August", 10),
     ROCK_STUN("Rock Stun", "2014 August", 11),
     FROG_MONARCHS("Frog Monarchs", "2014 August", 12),
     HIERATIC_SAFFIRA("Hieratic Saffira", "2014 July", 13),
@@ -30,7 +30,9 @@ public enum Deck {
     SYLVANS("Sylvans", "2014 July", 23),
     GUSTO_DRAGUNITY("Gusto Dragunity", "2013 March", 24),
     CITADEL_OF_EXEMPLAR("Citadel of Exemplar", "2014 July", 25),
-    WINDUPS("Windups", "2012 September", 26);
+    WINDUPS("Windups", "2012 September", 26),
+    TRAINS("Trains", "2014 August", 27),
+    ROCKET_BARRAGE("Rocket Barrage", "2014 August", 28);
 
     private String name;
     private String format;
