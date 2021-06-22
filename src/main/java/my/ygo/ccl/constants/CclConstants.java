@@ -1,4 +1,4 @@
-package ccl.constants;
+package my.ygo.ccl.constants;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;

@@ -1,4 +1,4 @@
-package ccl.domain;
+package my.ygo.ccl.domain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,13 +26,14 @@ public enum Deck {
     BROTHERHOOD_OF_KOAKI_MEIRU("Brotherhood of Koa’ki Meiru", "2014 July", 19),
     DAD_RETURN("DAD Return", "2008 March", 20),
     ZOMBIE_TELEDAD("Zombie TeleDAD", "2008 September", 21),
-    NIMBLE_FROGS("Nimble Frogs", "2013 March", 22),
+    NIMBLE_FROGS("Nimble Frogs", "2014 August", 22),
     SYLVANS("Sylvans", "2014 July", 23),
     GUSTO_DRAGUNITY("Gusto Dragunity", "2013 March", 24),
     CITADEL_OF_EXEMPLAR("Citadel of Exemplar", "2014 July", 25),
     WINDUPS("Windups", "2012 September", 26),
     TRAINS("Trains", "2014 August", 27),
-    ROCKET_BARRAGE("Rocket Barrage", "2014 August", 28);
+    ROCKET_BARRAGE("Rocket Barrage", "2014 August", 28),
+    REKINDLING("Rekindling", "2014 August", 29);
 
     private String name;
     private String format;
@@ -69,6 +70,6 @@ public enum Deck {
     }
 
     public static List<String> getDeckNames() {
-        return Arrays.stream(values()).map(deck -> deck.getName()).collect(Collectors.toUnmodifiableList());
+        return Arrays.stream(values()).map(deck -> deck.getName()).collect(Collectors.toList());
     }
 }

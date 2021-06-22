@@ -1,5 +1,5 @@
 *.class
 .DS_Store
-/src/resources/in/input.txt
-/src/resources/out/output.txt
+/src/main/resources/in/input.txt
+/src/main/resources/out/output.txt
 /.idea
