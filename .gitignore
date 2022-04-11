@@ -3,3 +3,4 @@
 /src/main/resources/in/input.txt
 /src/main/resources/out/output.txt
 /.idea
+target/

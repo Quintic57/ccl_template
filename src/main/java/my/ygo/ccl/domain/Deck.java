@@ -12,7 +12,7 @@ public enum Deck {
     KARAKURI_MACHINA_PLANT("Karakuri Machina Plant", "2010 September", 5),
     FUSION_HERO("Fusion HERO", "2012 March", 6),
     LIGHTSWORNS("Dawn of the Lightsworns", "2014 July", 7),
-    BATTERYMAN_OTK("Batteryman OTK", "2014 July", 8),
+    AA_BATTERIES("AA Batteries", "2014 August", 8),
     TENGU_PLANT("Tengu Plant", "2011 March", 9),
     RANK_UP_GADGETS("Rank-Up Gadgets", "2014 August", 10),
     ROCK_STUN("Rock Stun", "2014 August", 11),
@@ -33,7 +33,14 @@ public enum Deck {
     WINDUPS("Windups", "2012 September", 26),
     TRAINS("Trains", "2014 August", 27),
     ROCKET_BARRAGE("Rocket Barrage", "2014 August", 28),
-    REKINDLING("Rekindling", "2014 August", 29);
+    REKINDLING("Rekindling", "2014 August", 29),
+    AIRBLADE_TURBO("Airblade Turbo", "2006 September", 30),
+    REAPERBOOKS("Reaperbooks", "2014 August", 31),
+    ALIENS("Aliens", "2014 August", 32),
+    DEEZE_FROGS("Deeze Frogs", "2014 July", 33),
+    SYNCHRON_MASH("Synchron Mash", "2014 August", 34),
+    BABY_RULERS("Baby Rulers", "2013 March", 35),
+    HIERATIC_RULERS("Hieratic Rulers", "2014 January", 36);
 
     private String name;
     private String format;

@@ -1,9 +1,0 @@
-my/dw/ccl/constants/CclConstants.class
-my/dw/ccl/controller/CardListController.class
-my/dw/ccl/constants/CclConstants$ApplicationConstants$1.class
-my/dw/ccl/constants/CclConstants$ApplicationConstants.class
-my/dw/ccl/constants/CclConstants$ApplicationConstants$2.class
-my/dw/ccl/CclApplication.class
-my/dw/ccl/service/CardListService.class
-my/dw/ccl/constants/CclConstants$APIConstants.class
-my/dw/ccl/domain/Deck.class
