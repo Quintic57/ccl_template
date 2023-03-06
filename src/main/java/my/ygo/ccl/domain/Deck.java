@@ -40,7 +40,8 @@ public enum Deck {
     DEEZE_FROGS("Deeze Frogs", "2014 July", 33),
     SYNCHRON_MASH("Synchron Mash", "2014 August", 34),
     BABY_RULERS("Baby Rulers", "2013 March", 35),
-    HIERATIC_RULERS("Hieratic Rulers", "2014 January", 36);
+    HIERATIC_RULERS("Hieratic Rulers", "2014 January", 36),
+    TELLARKNIGHTS("Tellarknights", "2014 August", 37);
 
     private String name;
     private String format;

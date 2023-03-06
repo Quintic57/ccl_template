@@ -71,6 +71,7 @@ public class CclApplication {
         return "";
     }
 
+    //TODO: For each deck, list all of the cards that are not currently in a cart (i.e. they don't have a marker)
     private static void processInput(final String shop) {
         final String shopUID = CclConstants.ApplicationConstants.shopUIDs.get(shop);
         final List<String> decks = new ArrayList<>(deckStartingLines.keySet());
