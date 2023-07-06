@@ -1,128 +1,175 @@
 package my.ygo.ccl.service;
 
 import my.ygo.ccl.domain.Deck;
-import my.ygo.ccl.constants.CclConstants;
-import org.springframework.stereotype.Service;
+import my.ygo.ccl.domain.Format;
+import my.ygo.ccl.domain.Shop;
+import org.springframework.data.util.Pair;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-@Service
+//@Service
 public class CardListService {
-    private final static List<String> input = new ArrayList<>();
-    private final static Map<String, Integer> deckStartingLines = new LinkedHashMap<>();
-    private final static StringBuilder output = new StringBuilder();
 
-    private static int totalCardCount = 0;
+    public String generateCardList(final String input) {
+        final StringBuilder output = new StringBuilder();
 
-    public String generateManualCardList() {
-        readAndParseInput();
-        Map<String, String> shops = CclConstants.ApplicationConstants.shops;
-        for (String key: shops.keySet()) {
-            String shopHeader = key + ") " + shops.get(key) + "\n";
-            output.append(shopHeader);
-            processInput(shops.get(key));
-            output.append("Total: $\n\n");
+        try {
+            final Reader reader = new StringReader(input);
+            final Map<Format, Map<Deck, List<String>>> formatToDeckBuyList = convertInput(reader);
+            int totalCardCount = 0;
+            for (Shop shop: Shop.values()) {
+                final String shopHeader = shop.getPrefix() + ") " + shop.getName() + "\n";
+                output.append(shopHeader);
+                final Pair<String, Integer> shopOutput = getShopOutputAndCardCount(shop.getIdentifier(), formatToDeckBuyList);
+                output.append(shopOutput.getFirst());
+                totalCardCount = totalCardCount + shopOutput.getSecond();
+                output.append("Total: $\n\n");
+            }
+            output.append("Total Card Count: " + totalCardCount + "\n");
+            output.append("Grand Total: $" + "\n");
+        } catch (final Exception e) {
+            System.out.println("Exception thrown while processing input");
         }
-        output.append("Total Card Count: " + totalCardCount + "\n");
-        output.append("Grand Total: $" + "\n");
-        writeToFile();
+
         return output.toString();
     }
 
-    //Instead of reading input from local files, take it from the request. Move this code to a test case probably.
-    private static void readAndParseInput() {
+    private Map<Format, Map<Deck, List<String>>> convertInput(final Reader reader) {
+        final Map<Format, Map<Deck, List<String>>> formatToDeckBuyList = new LinkedHashMap<>();
+        for (Format format: Format.getListedFormats()) {
+            final Map<Deck, List<String>> buyList = Arrays.stream(Deck.values())
+                .filter(deck -> deck.getFormat().equals(format) || deck.getFormat().equals(Format.UNLISTED))
+                .collect(Collectors.toMap(deck -> deck,
+                    deck -> new ArrayList<>(),
+                    (u, v) -> {
+                        throw new IllegalStateException(String.format("Duplicate key %s", u));
+                    },
+                    LinkedHashMap::new)
+                );
+            formatToDeckBuyList.put(format, buyList);
+        }
+
         try {
-            Scanner s = new Scanner(new File("src/main/resources/in/input.txt"));
-            int i = 0;
-            while (s.hasNextLine()) {
-                final String line = s.nextLine();
-                final String deckName = findDeckNameIfInLine(line);
-                final boolean isDeckLine = line.matches(".*\\d{4}-\\d{2} - .*") && !deckName.isEmpty();
-                if (isDeckLine) {
-                    deckStartingLines.put(deckName, i);
+            final BufferedReader bufferedReader = new BufferedReader(reader);
+            final List<String> lines = bufferedReader.lines().collect(Collectors.toList());
+
+            // Parse all lines by format
+            final Map<Format, List<String>> formatToInputs = new LinkedHashMap<>();
+            Format currentFormat = Format.getListedFormats()
+                .stream()
+                .filter(format -> lines.get(0).contains(format.getName()))
+                .findAny()
+                .orElse(Format.CROSS_BANLIST);
+            int prevIndex = 0;
+            for (int i = 1; i < lines.size(); i++) {
+                if (i == lines.size() - 1) {
+                    formatToInputs.put(currentFormat, lines.subList(prevIndex, i));
+                    break;
                 }
 
-                input.add(line);
-                i++;
-            }
-            deckStartingLines.put("<END>", input.size() - 1);
-            s.close();
-        } catch (IOException e) {
-            System.out.println("Oops");
-        }
-    }
-
-    private static String findDeckNameIfInLine(final String line) {
-        for (final String deckName: Deck.getDeckNames()) {
-            if (line.contains(deckName)) {
-                return deckName;
-            }
-        }
-        return "";
-    }
-
-    private static void processInput(final String shop) {
-        final String shopUID = CclConstants.ApplicationConstants.shopUIDs.get(shop);
-        final List<String> decks = new ArrayList<>(deckStartingLines.keySet());
-        int cardCount = 0;
-
-        for (int i = 0; i < decks.size(); i++) {
-            if (decks.get(i).equals("<END>")) {
-                break;
-            }
-
-            int currentDeckIndex = deckStartingLines.get(decks.get(i));
-            int nextDeckIndex = deckStartingLines.get(decks.get(i + 1));
-            if (isInShop(shopUID, input.subList(currentDeckIndex, nextDeckIndex))) {
-                String deckHeader = "  " + decks.get(i) + "\n";
-                output.append(deckHeader);
-
-                for (int j = currentDeckIndex; j < nextDeckIndex; j++) {
-                    if (input.get(j).contains(shopUID)) {
-                        Matcher m = Pattern.compile(".*\\*\\s\\dx\\s(.*?)([" + String.join("", CclConstants.ApplicationConstants.shopUIDs.values()) + "]+).*").matcher(input.get(j));
-                        String temp = "";
-                        if (m.matches()) {
-                            int numCards = m.group(2).length() - m.group(2).replace(shopUID, "").length();
-                            temp = "    " + numCards + "x " + m.group(1) + "\n";
-                            cardCount = cardCount + numCards;
-                        }
-                        output.append(temp);
+                final String line = lines.get(i);
+                for (Format format: Format.getListedFormats()) {
+                    if (line.contains(format.getName())) {
+                        formatToInputs.put(currentFormat, lines.subList(prevIndex, i));
+                        currentFormat = format;
+                        prevIndex = i;
                     }
                 }
             }
-        }
 
-        totalCardCount = totalCardCount + cardCount;
-        output.append("Card Count: " + cardCount + "\n");
-    }
+            // Parse each format by deck
+            for (final Format format: formatToInputs.keySet()) {
+                final Map<Deck, List<String>> currentBuyList = formatToDeckBuyList.get(format);
+                Deck currentDeck = null;
+                for (int i = 1; i < formatToInputs.get(format).size(); i++) {
+                    final String line = formatToInputs.get(format).get(i);
+                    for (final Deck deck: currentBuyList.keySet()) {
+                        if (line.contains(deck.getName())) {
+                            currentDeck = deck;
+                        }
+                    }
+                    if (currentDeck != null) {
+                        currentBuyList.get(currentDeck).add(line);
+                    }
+                }
 
-    private static boolean isInShop(final String shopUID, final List<String> lines) {
-        return lines.stream().anyMatch(line -> line.contains(shopUID));
-    }
+            }
 
-    private static void writeToFile() {
-        try {
-            LocalDate now = LocalDate.now();
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            String fileName = "Report_" + dtf.format(now) + ".txt";
-            BufferedWriter out = new BufferedWriter(new FileWriter("src/main/resources/out/" + fileName));
-            out.write(output.toString());
-            out.close();
+            bufferedReader.close();
         } catch (IOException e) {
             System.out.println("Oops");
         }
+
+        return formatToDeckBuyList;
+    }
+
+    //TODO: For each deck, list all of the cards that are not currently in a cart (i.e. they don't have a marker)
+    private Pair<String, Integer> getShopOutputAndCardCount(final String shopUID,
+                                                            final Map<Format, Map<Deck, List<String>>> formatToDeckBuyList) {
+        final StringBuilder output = new StringBuilder();
+        int cardCount = 0;
+        for (final Format format: formatToDeckBuyList.keySet()) {
+            if (!isShopInFormat(shopUID, format, formatToDeckBuyList)) {
+                continue;
+            }
+            final Map<Deck, List<String>> deckToBuyList = formatToDeckBuyList.get(format);
+            output.append(format.getName()).append("\n");
+
+            for (final Deck deck: deckToBuyList.keySet()) {
+                final List<String> buyList = deckToBuyList.get(deck);
+                if (!isShopInBuyList(shopUID, buyList)) {
+                    continue;
+                }
+                output.append("  ").append(deck.getName()).append("\n");
+
+                for (final String line: buyList) {
+                    if (!line.contains(shopUID)) {
+                        continue;
+                    }
+
+                    final Pattern pattern = Pattern.compile(String.join("",
+                        "\\s*\\dx\\s*(.*?)([",
+                        Arrays.stream(Shop.values()).map(Shop::getIdentifier).collect(Collectors.joining("")),
+                        "]+).*"));
+                    final Matcher m = pattern.matcher(line);
+                    String temp = "";
+                    if (m.matches()) {
+                        int numCards = m.group(2).length() - m.group(2).replace(shopUID, "").length();
+                        temp = "    " + numCards + "x " + m.group(1) + "\n";
+                        cardCount = cardCount + numCards;
+                    }
+                    output.append(temp);
+                }
+            }
+        }
+        output.append("Card Count: ").append(cardCount).append("\n");
+
+        return Pair.of(output.toString(), cardCount);
+    }
+
+    private static boolean isShopInFormat(final String shopUID,
+                                          final Format format,
+                                          final Map<Format, Map<Deck, List<String>>> formatToDeckBuyList) {
+        return formatToDeckBuyList.get(format).values()
+            .stream()
+            .flatMap(Collection::stream)
+            .anyMatch(line -> line.contains(shopUID));
+    }
+
+    private static boolean isShopInBuyList(final String shopUID, final List<String> buyList) {
+        return buyList.stream().anyMatch(line -> line.contains(shopUID));
     }
 
 }

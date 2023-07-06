@@ -1,14 +1,9 @@
 ### IntelliJ IDEA ###
 *.class
 /.idea
-out/
 target/
 *.iml
 
 ### MacOS ###
 .DS_Store
 *.iml.*
-
-### ccl_template ###
-/src/main/resources/in/input.txt
-/src/main/resources/out/output.txt
