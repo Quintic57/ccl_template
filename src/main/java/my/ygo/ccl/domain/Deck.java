@@ -2,9 +2,6 @@ package my.ygo.ccl.domain;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 //TODO: Have this pull from duelingbook OR google sheets instead
 public enum Deck {
@@ -36,9 +33,9 @@ public enum Deck {
     WINDUPS("Windups", "2012 September", Format.CROSS_BANLIST, false),
     TRAINS("Trains", "2014 July", Format.CROSS_BANLIST, true),
     ROCKET_BARRAGE("Rocket Barrage", "2014 July", Format.CROSS_BANLIST, true),
-    REKINDLING("Rekindling", "2014 July", Format.CROSS_BANLIST, true),
+    REKINDLING("Rekindling", "2013 March", Format.CROSS_BANLIST, true),
     AIRBLADE_TURBO("Airblade Turbo", "2006 September", Format.CROSS_BANLIST, false),
-    REAPERBOOKS("Reaperbooks", "2014 July", Format.CROSS_BANLIST, true),
+    REAPERBOOKS("Reaperbooks", "2013 March", Format.CROSS_BANLIST, true),
     ALIENS("Aliens", "2014 July", Format.CROSS_BANLIST, true),
     DEEZE_FROGS("Deeze Frogs", "2014 July", Format.CROSS_BANLIST, false),
     SYNCHRON_MASH("Synchron Mash", "2014 July", Format.CROSS_BANLIST, true),
@@ -61,20 +58,20 @@ public enum Deck {
     private final LocalDate implementedDate;
     private final boolean ported;
 
-    private Deck(final String name,
+    Deck(final String name,
                  final String banlist,
                  final Format format) {
         this(name, banlist, format, false);
     }
 
-    private Deck(final String name,
+    Deck(final String name,
                  final String banlist,
                  final Format format,
                  final boolean ported) {
         this(name, banlist, format, LocalDate.of(2019, Month.JULY, 21), ported);
     }
 
-    private Deck(final String name,
+    Deck(final String name,
                  final String banlist,
                  final Format format,
                  final LocalDate implementedDate,
@@ -92,10 +89,6 @@ public enum Deck {
 
     public Format getFormat() {
         return format;
-    }
-
-    public static List<String> getAllDeckKeywords() {
-        return Arrays.stream(values()).map(Deck::getName).collect(Collectors.toList());
     }
 
 }

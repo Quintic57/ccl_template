@@ -14,17 +14,14 @@ import java.time.format.DateTimeFormatter;
 @RequiredArgsConstructor
 public class CclApplication {
 
-    //TODO: Implement once this converted to a spring app
-//    private final CardListService cardListService;
-
-    //TODO: Temporary. Once converted to spring app, this should just have the SpringBootApplication annotation,
+    // TODO: Temporary. Once converted to spring app, this should just have the SpringBootApplication annotation,
     // and the logic to read input should be delineated to another service, also should just return the output as
     // opposed to writing it to a file
     public static void main(String[] args) throws IOException {
         final CardListService cardListService = new CardListService();
-        final String input = Files.readString(Path.of("src/main/resources/in/input.txt"));
-        final String output = cardListService.generateCardList(input);
-        writeToFile(output);
+        final String cardList = Files.readString(Path.of("src/main/resources/in/card_list.txt"));
+        final String cardReport = cardListService.generateCardReport(cardList);
+        writeToFile(cardReport);
     }
 
     private static void writeToFile(final String output) throws IOException {

@@ -1,11 +1,10 @@
 package my.ygo.ccl.controller;
 
-import my.ygo.ccl.domain.CardListDto;
+import my.ygo.ccl.dto.CardListDto;
 import my.ygo.ccl.service.CardListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 
 ///*TODO: Rebuild project to pull lists from DB. Connect to wss://duel.duelingbook.com:8443/ via websocketsecure
 //   (find out how DB handles logins). From there, websocket.send(JSON.stringify({"action":"Load deck"})) will return list
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 //@RestController
 public class CardListController {
 
+    //TODO: Implement once this converted to a spring app
     private final CardListService cardListService;
 
     @Autowired
