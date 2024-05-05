@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -56,20 +57,7 @@ public class CardListService {
     // TODO: Fix deck list being out of order
     // TODO: Exclude pack name from card name (i.e. Rekindling [MYFI] should just be Rekindling)
     private Map<Format, Map<Deck, List<Card>>> convertInput(final Reader reader) throws IOException {
-        final Map<Format, Map<Deck, List<Card>>> formatToDeckBuyList = new LinkedHashMap<>();
-        for (Format format: Format.getListedFormats()) {
-            final Map<Deck, List<Card>> buyList = Arrays.stream(Deck.values())
-                .filter(deck -> deck.getFormat().equals(format) || deck.getFormat().equals(Format.UNLISTED))
-                .collect(Collectors.toMap(
-                    deck -> deck,
-                    deck -> new ArrayList<>(),
-                    (u, v) -> {
-                        throw new IllegalStateException(String.format("Duplicate key %s", u));
-                    },
-                    LinkedHashMap::new)
-                );
-            formatToDeckBuyList.put(format, buyList);
-        }
+        final Map<Format, Map<Deck, List<Card>>> formatToDeckBuyList = Deck.generateEmptyDeckBuyListMap();
         final BufferedReader bufferedReader = new BufferedReader(reader);
         final List<String> lines = bufferedReader.lines().collect(Collectors.toList());
 
@@ -104,7 +92,8 @@ public class CardListService {
             for (int i = 1; i < formatToInputs.get(format).size(); i++) {
                 final String line = formatToInputs.get(format).get(i);
                 for (final Deck deck: currentBuyList.keySet()) {
-                    if (line.contains(deck.getName())) {
+                    if (line.contains(deck.getName())
+                        && (deck.getFormat() != Format.CROSS_BANLIST || line.contains(deck.getBanlistAsString()))) {
                         currentDeck = deck;
                     }
                 }
@@ -198,6 +187,7 @@ public class CardListService {
             .stream()
             .flatMap(buyList -> buyList.values().stream())
             .flatMap(Collection::stream)
+            .filter(Objects::nonNull)
             .filter(card -> card.getQuantityMap().containsKey(shop))
             .map(card -> card.convertToItemForShop(shop))
             .collect(Collectors.collectingAndThen(

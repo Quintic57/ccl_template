@@ -6,10 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-///*TODO: Rebuild project to pull lists from DB. Connect to wss://duel.duelingbook.com:8443/ via websocketsecure
-//   (find out how DB handles logins). From there, websocket.send(JSON.stringify({"action":"Load deck"})) will return list
-//   of deck names associated with the logged in account, {"action":"Load deck", "deck":deck_name_here} gets actual deck contents
-//   Also, add another controller function that will automatically sync duelingbook and google drive directory*/
+/*
+TODO: Rebuild project to pull lists from DB. Connect to wss://duel.duelingbook.com:8443/ via websocketsecure
+   (find out how DB handles logins). From there, websocket.send(JSON.stringify({"action":"Load deck"})) will return list
+   of deck names associated with the logged in account, {"action":"Load deck", "deck":deck_name_here} gets actual deck contents
+   Also, add another controller function that will automatically sync duelingbook and google drive directory*/
 //@RestController
 public class CardListController {
 

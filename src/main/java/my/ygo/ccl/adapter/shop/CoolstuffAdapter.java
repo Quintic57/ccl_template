@@ -15,6 +15,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
@@ -35,13 +37,24 @@ public class CoolstuffAdapter implements Adapter {
         final Elements cartElement = document.getElementsByClass("row cart-row main-container");
 
         for (final Element cardElement: cartElement) {
-            final String cardName = cardElement.getElementsByAttributeValue("itemprop", "name").get(0).text();
-            final Integer quantity = Integer.parseInt(
+            // Card Name
+            String cardName = cardElement.getElementsByAttributeValue("itemprop", "name").get(0).text();
+            final Pattern pattern = Pattern.compile("\\s\\(.*Rare\\)");
+            final Matcher matcher = pattern.matcher(cardName);
+            if (matcher.find()) {
+                cardName = cardName.replace(matcher.group(0), "");
+            }
+            // Quantity
+            Integer quantity = Integer.parseInt(
                 cardElement.getElementsByClass("int input-add-qty").get(0).attributes().get("value"));
+            if (!cardElement.getElementsByClass("b1-gx-free").isEmpty()) {
+                quantity = quantity + 2;
+            }
+            // Price
             final Double price = Double.parseDouble(cardElement.getElementsByClass("subtotal").get(0).child(0)
                 .text().replace("$", "").strip());
-            final Item item = new Item(cardName, quantity, price, "Coolstuff");
-            itemList.add(item);
+
+            itemList.add(new Item(cardName, quantity, price, "Coolstuff"));
         }
 
         return itemList

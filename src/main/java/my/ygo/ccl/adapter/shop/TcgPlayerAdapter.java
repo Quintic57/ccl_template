@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
 // is obfuscated, for now just pull it from the HTML
+// TODO: Update parser to only grab name of card if the rarity is in parenthesis in the card title
 @Component
 public class TcgPlayerAdapter implements Adapter {
 
