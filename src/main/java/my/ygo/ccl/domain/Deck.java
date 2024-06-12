@@ -54,11 +54,12 @@ public enum Deck {
     ADAMANCIPATORS("Adamancipators", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2023, Month.JUNE, 17), true),
     PALEOZOIC_FISH("Paleozoic Fish", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     INFERNITY_PORTED("Infernity", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
-    CHAOS("Chaos", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
+    CHAOS("Chaos", YearMonth.of(2018, Month.SEPTEMBER), Format.CROSS_BANLIST, true),
     // Modern
-    ADAMANCIPATORS_MODERN("Adamancipators", YearMonth.of(2024, Month.APRIL), Format.MODERN),
+    ADAMANCIPATORS_MODERN("Adamancipators", YearMonth.of(2024, Month.JANUARY), Format.MODERN),
     CONSTELLARKNIGHTS("Constellarknights", YearMonth.of(2023, Month.JUNE), Format.MODERN),
     GHOTI("Ghoti", YearMonth.of(2024, Month.APRIL), Format.MODERN),
+    PALEOZOIC_JACK("Paleozoic Jack", YearMonth.of(2024, Month.JANUARY), Format.MODERN),
     // Edison
     ALIEN_CONTROL("Alien Control", YearMonth.of(2010, Month.MARCH), Format.EDISON),
     MACHINA_GEARTOWN("Machina Geartown", YearMonth.of(2010, Month.MARCH), Format.EDISON),

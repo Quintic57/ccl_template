@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
@@ -25,6 +27,20 @@ import java.util.stream.Collectors;
 public class TcgPlayerAdapter implements Adapter {
 
     private final Document document;
+
+    private static final String RARITY_KEYWORDS;
+
+    static {
+        final Set<String> rarityKeywords = Set.of(
+            "(PCR)",
+            "(PUR)",
+            "(Platinum Secret Rare)",
+            "(Quarter Century Secret Rare)",
+            "(Secret Rare)",
+            "(UR)"
+        );
+        RARITY_KEYWORDS = String.join(", ", rarityKeywords);
+    }
 
     @SneakyThrows
     public TcgPlayerAdapter() {
@@ -44,13 +60,21 @@ public class TcgPlayerAdapter implements Adapter {
             final Elements items = pkg.getElementsByClass("package-item");
 
             for (final Element item: items) {
-                final String cardName = item.getElementsByAttributeValue("data-testid", "productName").text();
+                // Card Name
+                String cardName = item.getElementsByAttributeValue("data-testid", "productName").text();
+                final Pattern pattern = Pattern.compile("\\(.*\\)");
+                final Matcher matcher = pattern.matcher(cardName);
+                if (matcher.find() && RARITY_KEYWORDS.contains(matcher.group(0))) {
+                    cardName = cardName.replace(matcher.group(0), "").strip();
+                }
+                // Quantity
                 final Integer quantity = Integer.parseInt(
                     item.getElementsByClass("add-to-cart__dropdown__overlay").get(0).textNodes().get(0).text().strip());
+                // Price
                 final Double price = Double.parseDouble(item.getElementsByAttributeValue("data-testid", "txtItemPrice")
                     .get(0).text().replace("$", "").strip());
-                final Item packageItem = new Item(cardName, quantity, price, packageName);
-                itemList.add(packageItem);
+
+                itemList.add(new Item(cardName, quantity, price, packageName));
             }
         }
 
