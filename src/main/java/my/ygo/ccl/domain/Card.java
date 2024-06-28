@@ -27,16 +27,24 @@ public class Card {
     }
 
     public static Card convertFromLine(final String line) {
-        final Pattern pattern = Pattern.compile(String.join("",
+        final Pattern p = Pattern.compile(String.join("",
             "\\s*\\dx\\s*(.*?)([",
             Arrays.stream(Shop.values()).map(Shop::getIdentifier).collect(Collectors.joining("")),
             "]+).*"));
-        final Matcher m = pattern.matcher(line);
+        final Matcher m = p.matcher(line);
         if (!m.matches()) {
             return null;
         }
 
-        final Card card = new Card(m.group(1));
+        // Strip appended pack name
+        String cardName = m.group(1);
+        final Pattern p2 = Pattern.compile("\\[.*]");
+        final Matcher m2 = p2.matcher(cardName);
+        if (m2.find()) {
+            cardName = cardName.replace(m2.group(0), "").strip();
+        }
+
+        final Card card = new Card(cardName);
         for (final Shop shop: Shop.values()) {
             final String shopUID = shop.getIdentifier();
 

@@ -6,15 +6,19 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 //TODO: Have this pull from duelingbook OR google sheets instead
 public enum Deck {
     // Cross Banlist
     JUNK_DOPPEL("Junk Doppel", YearMonth.of(2011, Month.MARCH), Format.CROSS_BANLIST, false),
     GLADIATOR_BEASTS("Glad Beasts", YearMonth.of(2008, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
-    INFERNITY("Infernity", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, false),
+    INFERNITY("Infernity", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, false, "INFERNITY_PORTED"),
     QD_DANDYWARRIOR("Quickdraw Dandywarrior", YearMonth.of(2010, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
     KARAKURI_MACHINA_PLANT("Karakuri Machina Plant", YearMonth.of(2010, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
     FUSION_HERO("Fusion HERO", YearMonth.of(2012, Month.MARCH), Format.CROSS_BANLIST, false),
@@ -47,7 +51,7 @@ public enum Deck {
     DEEZE_FROGS("Deeze Frogs", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, false),
     SYNCHRON_MASH("Synchron Mash", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     BABY_RULERS("Baby Rulers", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, false),
-    HIERATIC_RULERS("Hieratic Rulers", YearMonth.of(2014, Month.JANUARY), Format.CROSS_BANLIST, false),
+    HIERATIC_RULERS("Hieratic Rulers", YearMonth.of(2014, Month.JANUARY), Format.CROSS_BANLIST, false, "MYTHIC_RULERS"),
     TELLARKNIGHTS("Tellarknights", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2022, Month.APRIL, 14), true),
     MAGISTUS("Magistus", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2022, Month.SEPTEMBER, 4), true),
     WITCHCRAFTERS("Witchcrafters", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2022, Month.NOVEMBER, 1), true),
@@ -55,11 +59,11 @@ public enum Deck {
     PALEOZOIC_FISH("Paleozoic Fish", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     INFERNITY_PORTED("Infernity", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     CHAOS("Chaos", YearMonth.of(2018, Month.SEPTEMBER), Format.CROSS_BANLIST, true),
+    PALEOZOIC_JACK("Paleozoic Jack", YearMonth.of(2024, Month.APRIL), Format.CROSS_BANLIST, false, "PALEOZOIC_FISH"),
     // Modern
     ADAMANCIPATORS_MODERN("Adamancipators", YearMonth.of(2024, Month.JANUARY), Format.MODERN),
     CONSTELLARKNIGHTS("Constellarknights", YearMonth.of(2023, Month.JUNE), Format.MODERN),
     GHOTI("Ghoti", YearMonth.of(2024, Month.APRIL), Format.MODERN),
-    PALEOZOIC_JACK("Paleozoic Jack", YearMonth.of(2024, Month.JANUARY), Format.MODERN),
     // Edison
     ALIEN_CONTROL("Alien Control", YearMonth.of(2010, Month.MARCH), Format.EDISON),
     MACHINA_GEARTOWN("Machina Geartown", YearMonth.of(2010, Month.MARCH), Format.EDISON),
@@ -70,81 +74,84 @@ public enum Deck {
 
     @Getter
     private final String name;
-    private final YearMonth banlist;
+    private final YearMonth banList;
     @Getter
     private final Format format;
     private final LocalDate implementedDate;
     private final boolean ported;
+    private final String shared;
     @Getter
     private final boolean active;
 
     Deck(final String name,
-         final YearMonth banlist,
+         final YearMonth banList,
          final Format format) {
-        this(name, banlist, format, false);
+        this(name, banList, format, false);
     }
 
     Deck(final String name,
-         final YearMonth banlist,
+         final YearMonth banList,
          final Format format,
          final boolean ported) {
-        this(name, banlist, format, ported, true);
+        this(name, banList, format, ported, true);
     }
 
     Deck(final String name,
-         final YearMonth banlist,
+         final YearMonth banList,
          final Format format,
          final boolean ported,
          final boolean active) {
-        this(name, banlist, format, LocalDate.of(2019, Month.JULY, 21), ported, active);
+        this(name, banList, format, LocalDate.of(2019, Month.JULY, 21), ported, active, "");
     }
 
     Deck(final String name,
-         final YearMonth banlist,
+         final YearMonth banList,
+         final Format format,
+         final boolean ported,
+         final String shared) {
+        this(name, banList, format, LocalDate.of(2019, Month.JULY, 21), ported, true, shared);
+    }
+
+    Deck(final String name,
+         final YearMonth banList,
          final Format format,
          final LocalDate implementedDate,
          final boolean ported) {
-        this(name, banlist, format, implementedDate, ported, true);
+        this(name, banList, format, implementedDate, ported, true, "");
     }
 
     Deck(final String name,
-         final YearMonth banlist,
+         final YearMonth banList,
          final Format format,
          final LocalDate implementedDate,
          final boolean ported,
-         final boolean active) {
+         final boolean active,
+         final String shared) {
         this.name = name;
-        this.banlist = banlist;
+        this.banList = banList;
         this.format = format;
         this.implementedDate = implementedDate;
         this.ported = ported;
         this.active = active;
+        this.shared = shared;
     }
 
-    public String getBanlistAsString() {
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
-        final String text = banlist.format(formatter);
-        return text;
-    }
-
-    public static Map<Format, Map<Deck, List<Card>>> generateEmptyDeckBuyListMap() {
-        final Map<Format, Map<Deck, List<Card>>> formatToDeckBuyList = new LinkedHashMap<>();
-        for (Format format: Format.getListedFormats()) {
-            final Map<Deck, List<Card>> buyList = Arrays.stream(Deck.values())
-                .filter(Deck::isActive)
-                .filter(deck -> deck.getFormat().equals(format) || deck.getFormat().equals(Format.UNLISTED))
-                .collect(Collectors.toMap(
-                    deck -> deck,
-                    deck -> new ArrayList<>(),
-                    (u, v) -> {
-                        throw new IllegalStateException(String.format("Duplicate key %s", u));
-                    },
-                    LinkedHashMap::new)
-                );
-            formatToDeckBuyList.put(format, buyList);
+    @Override
+    public String toString() {
+        if (format != Format.CROSS_BANLIST) {
+            return name;
         }
 
-        return formatToDeckBuyList;
+        return (banList != null ? banList.format(DateTimeFormatter.ofPattern("yyyy-MM")) : "")
+            + (ported ? "X" : "")
+            + (isNotEmpty(shared) ? "Z" : "")
+            + " - " + name;
+    }
+
+    public static Map<String, Deck> getDeckStringToObjectMapForFormat(final Format format) {
+        return Arrays.stream(Deck.values())
+            .filter(deck -> format == deck.getFormat() || deck.getFormat().equals(Format.UNLISTED))
+            .collect(Collectors.toMap(Deck::toString, deck -> deck, (o1, o2) -> o1, LinkedHashMap::new));
     }
 
 }
