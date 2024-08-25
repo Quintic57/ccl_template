@@ -37,20 +37,20 @@ public class CoolstuffAdapter implements Adapter {
         final Elements cartElement = document.getElementsByClass("row cart-row main-container");
 
         for (final Element cardElement: cartElement) {
-            // Card Name
+            // ---Card Name---
             String cardName = cardElement.getElementsByAttributeValue("itemprop", "name").get(0).text();
-            final Pattern pattern = Pattern.compile("\\s\\(.*Rare\\)");
-            final Matcher matcher = pattern.matcher(cardName);
+            // strip rarity suffix
+            final Matcher matcher = Pattern.compile("\\s\\(.*Rare\\)").matcher(cardName);
             if (matcher.find()) {
                 cardName = cardName.replace(matcher.group(0), "");
             }
-            // Quantity
+            // ---Quantity---
             Integer quantity = Integer.parseInt(
                 cardElement.getElementsByClass("int input-add-qty").get(0).attributes().get("value"));
             if (!cardElement.getElementsByClass("b1-gx-free").isEmpty()) {
                 quantity = quantity + 2;
             }
-            // Price
+            // ---Price---
             final Double price = Double.parseDouble(cardElement.getElementsByClass("subtotal").get(0).child(0)
                 .text().replace("$", "").strip());
 

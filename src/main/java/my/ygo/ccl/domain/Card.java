@@ -27,21 +27,19 @@ public class Card {
     }
 
     public static Card convertFromLine(final String line) {
-        final Pattern p = Pattern.compile(String.join("",
+        final Matcher lineMatcher = Pattern.compile(String.join("",
             "\\s*\\dx\\s*(.*?)([",
             Arrays.stream(Shop.values()).map(Shop::getIdentifier).collect(Collectors.joining("")),
-            "]+).*"));
-        final Matcher m = p.matcher(line);
-        if (!m.matches()) {
+            "]+).*")).matcher(line);
+        if (!lineMatcher.matches()) {
             return null;
         }
 
         // Strip appended pack name
-        String cardName = m.group(1);
-        final Pattern p2 = Pattern.compile("\\[.*]");
-        final Matcher m2 = p2.matcher(cardName);
-        if (m2.find()) {
-            cardName = cardName.replace(m2.group(0), "").strip();
+        String cardName = lineMatcher.group(1);
+        final Matcher packNameMatcher = Pattern.compile("\\[.*]").matcher(cardName);
+        if (packNameMatcher.find()) {
+            cardName = cardName.replace(packNameMatcher.group(0), "").strip();
         }
 
         final Card card = new Card(cardName);
@@ -52,7 +50,7 @@ public class Card {
                 continue;
             }
 
-            final int numOfCardsForShop = m.group(2).length() - m.group(2).replace(shopUID, "").length();
+            final int numOfCardsForShop = lineMatcher.group(2).length() - lineMatcher.group(2).replace(shopUID, "").length();
             card.quantityMap.put(shop, numOfCardsForShop);
         }
 

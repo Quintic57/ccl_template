@@ -1,8 +1,7 @@
 package my.ygo.ccl;
 
-import feign.Feign;
 import lombok.RequiredArgsConstructor;
-import my.ygo.ccl.feign.DuelingBookClient;
+import my.ygo.ccl.domain.Format;
 import my.ygo.ccl.service.CardListService;
 
 import java.io.BufferedWriter;
@@ -28,19 +27,26 @@ public class CclApplication {
     // and the logic to read input should be delineated to another service, also should just return the output as
     // opposed to writing it to a file
     public static void main(String[] args) throws IOException {
-//        final DuelingBookClient duelingBookClient = Feign.builder()
-//            .target(DuelingBookClient.class, "https://www.duelingbook.com");
-//        duelingBookClient.login();
+        /*
+        final DuelingBookClient duelingBookClient = Feign.builder()
+            .target(DuelingBookClient.class, "https://www.duelingbook.com");
+        duelingBookClient.login();
+         */
+
         final CardListService cardListService = new CardListService();
+
         final String cardList = Files.readString(Path.of("src/main/resources/in/card_list.txt"));
         final String cardReport = cardListService.generateCardReport(cardList);
-        writeToFile(cardReport);
+        final String cardReportName = "Report_"
+            + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())
+            + ".txt";
+        writeToFile(cardReport, cardReportName);
+
+//        final String deckList = Format.getStringOfDecksSortedByFormat();
+//        writeToFile(deckList, "deck_list.txt");
     }
 
-    private static void writeToFile(final String output) throws IOException {
-        final LocalDate now = LocalDate.now();
-        final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        final String fileName = "Report_" + dtf.format(now) + ".txt";
+    private static void writeToFile(final String output, final String fileName) throws IOException {
         final BufferedWriter out = new BufferedWriter(new FileWriter("src/main/resources/out/" + fileName));
         out.write(output);
         out.close();

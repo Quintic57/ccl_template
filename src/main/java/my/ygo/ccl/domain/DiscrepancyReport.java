@@ -9,8 +9,8 @@ public class DiscrepancyReport {
 
     private final Map<String, Integer> itemsFromCart;
 
-    private final Map<String, Integer> itemsExcludedFromList;
+    private final Map<String, Integer> excludedFromCart;
 
-    private final Map<String, Integer> itemsExcludedFromCart;
+    private final Map<String, Integer> excludedFromList;
 
 }

@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
  - If card exists in shop but not in list, list it as [Unlisted]
  */
 //@Service
-// TODO: Add method that generates a card list template that can be filled in (similar to what exists in iCloud Notes now)
 public class CardListService {
 
     public String generateCardReport(final String input) throws IOException {
@@ -43,7 +42,7 @@ public class CardListService {
         for (final Shop shop: shopsInCardList) {
             final ShopReport shopReport = new ShopReport(shop);
             shopReport.enrichWithBuyList(formatToDeckBuyList);
-            totalCardCount = totalCardCount + shopReport.getCardCount();
+            totalCardCount = totalCardCount + shopReport.getTotalCardCount();
             output.append(shopReport.getHeader()).append(shopReport.getBody()).append(shopReport.getFooter());
         }
         output.append("Total Card Count: " + totalCardCount + "\n");

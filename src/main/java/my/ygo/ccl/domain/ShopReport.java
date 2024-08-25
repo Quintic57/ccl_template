@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public class ShopReport {
 
     private final StringBuilder footer;
 
-    private Integer cardCount;
+    private Integer totalCardCount;
 
     public ShopReport(final Shop shop) {
         this.shop = shop;
@@ -38,10 +39,10 @@ public class ShopReport {
         // Body
         final DiscrepancyReport dReport = generateDiscrepancyReport(formatToDeckBuyList);
         final Map<String, Integer> itemsFromCart = dReport.getItemsFromCart();
-        int cardCount = 0;
+        int buyListCardCount = 0;
         for (final Format format: formatToDeckBuyList.keySet()) {
             if (!isShopInFormat(format, formatToDeckBuyList)
-                || isFormatExcludedFromCart(format ,formatToDeckBuyList, dReport.getItemsExcludedFromList())) {
+                || isFormatExcludedFromCart(format ,formatToDeckBuyList, dReport.getExcludedFromCart())) {
                 continue;
             }
             final Map<Deck, List<Card>> deckToBuyList = formatToDeckBuyList.get(format);
@@ -50,7 +51,7 @@ public class ShopReport {
             for (final Deck deck: deckToBuyList.keySet()) {
                 final List<Card> buyList = deckToBuyList.get(deck);
                 if (!isShopInBuyList(buyList)
-                    || isBuyListExcludedFromCart(buyList, dReport.getItemsExcludedFromList())) {
+                    || isBuyListExcludedFromCart(buyList, dReport.getExcludedFromCart())) {
                     continue;
                 }
                 body.append("  ").append(deck.getName()).append("\n");
@@ -70,30 +71,24 @@ public class ShopReport {
                         itemsFromCart.put(card.getName(), cardQuantityInCart - cardQuantityInList);
                         body.append("    ").append(card.convertToItemForShop(shop).toString()).append("\n");
                     }
-                    cardCount = cardCount + cardQuantityInList;
+                    buyListCardCount = buyListCardCount + cardQuantityInList;
                 }
             }
         }
 
         // Footer
-        setCardCount(cardCount);
-        footer.append("Card Count: ").append(cardCount).append("\n");
-        footer.append("Total: ").append(shop.getAdapter().extractTotalPrice()).append("\n");
-        // TODO: Add card count
-        if (!dReport.getItemsExcludedFromList().isEmpty()) {
-            footer.append("[In list but not in cart]\n");
-            dReport.getItemsExcludedFromList().entrySet()
-                .stream()
-                .map(entry -> new Item(entry.getKey(), entry.getValue()))
-                .forEach(item -> footer.append("    ").append(item).append("\n"));
-        }
-        // TODO: Add card count
-        if (!dReport.getItemsExcludedFromCart().isEmpty()) {
+        footer.append("Card Count: ").append(buyListCardCount).append("\n");
+        int exclusionsCardCount = 0;
+        if (!dReport.getExcludedFromList().isEmpty()) {
             footer.append("[In cart but not in list]\n");
-            dReport.getItemsExcludedFromCart().entrySet()
-                .stream()
-                .map(entry -> new Item(entry.getKey(), entry.getValue()))
-                .forEach(item -> footer.append("    ").append(item).append("\n"));
+            exclusionsCardCount = exclusionsCardCount + appendExclusions(dReport.getExcludedFromList());
+        }
+        footer.append("Card Count: ").append(exclusionsCardCount).append("\n");
+        setTotalCardCount(buyListCardCount + exclusionsCardCount);
+        footer.append("Total: ").append(shop.getAdapter().extractTotalPrice()).append("\n");
+        if (!dReport.getExcludedFromCart().isEmpty()) {
+            footer.append("[In list but not in cart]\n");
+            appendExclusions(dReport.getExcludedFromCart());
         }
         footer.append("\n");
     }
@@ -103,7 +98,6 @@ public class ShopReport {
         final Map<String, Integer> itemsFromCart = shop.getAdapter().extractPackages()
             .stream()
             .collect(Collectors.toMap(Item::getCardName, Item::getQuantity));
-
         final Map<String, Integer> itemsFromList = formatToDeckBuyList.values()
             .stream()
             .flatMap(buyList -> buyList.values().stream())
@@ -116,40 +110,45 @@ public class ShopReport {
             .stream()
             .collect(Collectors.toMap(Item::getCardName, Item::getQuantity));
 
-        // TODO: Consolidate duplicated code
-        final Map<String, Integer> itemsExcludedFromList = itemsFromList.entrySet()
+        // In list but not in cart
+        final Map<String, Integer> excludedFromCart = generateExclusionSet(itemsFromList, itemsFromCart);
+        // In cart but not in list
+        final Map<String, Integer> excludedFromList = generateExclusionSet(itemsFromCart, itemsFromList);
+
+        return new DiscrepancyReport(itemsFromCart, excludedFromCart, excludedFromList);
+    }
+
+    private Map<String, Integer> generateExclusionSet(final Map<String, Integer> set1,
+                                                      final Map<String, Integer> set2) {
+        return set1.entrySet()
             .stream()
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
             .entrySet()
             .stream()
             .filter(entry -> {
-                if (!itemsFromCart.containsKey(entry.getKey())) {
+                if (!set2.containsKey(entry.getKey())) {
                     return true;
-                } else if (itemsFromCart.get(entry.getKey()) < entry.getValue()) {
-                    entry.setValue(entry.getValue() - itemsFromCart.get(entry.getKey()));
-                    return true;
-                }
-                return false;
-            })
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        final Map<String, Integer> itemsExcludedFromCart = itemsFromCart.entrySet()
-            .stream()
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
-            .entrySet()
-            .stream()
-            .filter(entry -> {
-                if (!itemsFromList.containsKey(entry.getKey())) {
-                    return true;
-                } else if (itemsFromList.get(entry.getKey()) < entry.getValue()) {
-                    entry.setValue(entry.getValue() - itemsFromList.get(entry.getKey()));
+                } else if (set2.get(entry.getKey()) < entry.getValue()) {
+                    entry.setValue(entry.getValue() - set2.get(entry.getKey()));
                     return true;
                 }
                 return false;
             })
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
-        return new DiscrepancyReport(itemsFromCart, itemsExcludedFromList, itemsExcludedFromCart);
+    private int appendExclusions(final Map<String, Integer> exclusionMap) {
+        final Set<Item> items = exclusionMap.entrySet()
+            .stream()
+            .map(entry -> new Item(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toSet());
+        int cardCount = 0;
+        for (final Item item: items) {
+            footer.append("    ").append(item).append("\n");
+            cardCount = cardCount + item.getQuantity();
+        }
+
+        return cardCount;
     }
 
     private boolean isShopInFormat(final Format format,

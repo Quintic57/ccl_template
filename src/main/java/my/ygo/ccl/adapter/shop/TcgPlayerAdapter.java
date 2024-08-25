@@ -27,18 +27,24 @@ public class TcgPlayerAdapter implements Adapter {
 
     private final Document document;
 
-    private static final String RARITY_KEYWORDS;
+    private static final String ALL_SUFFIXES;
+    private static final String RARITY_SUFFIXES;
+    private static final String OTHER_SUFFIXES;
 
     static {
-        final Set<String> rarityKeywords = Set.of(
-            "(PCR)",
-            "(PUR)",
-            "(Platinum Secret Rare)",
-            "(Quarter Century Secret Rare)",
-            "(Secret Rare)",
-            "(UR)"
+        RARITY_SUFFIXES = String.join(
+            ", ",
+            Set.of(
+                "(PCR)",
+                "(PUR)",
+                "(Platinum Secret Rare)",
+                "(Quarter Century Secret Rare)",
+                "(Secret Rare)",
+                "(UR)"
+            )
         );
-        RARITY_KEYWORDS = String.join(", ", rarityKeywords);
+        OTHER_SUFFIXES = String.join(", ", Set.of("(A), (B), (C)"));
+        ALL_SUFFIXES = String.join(" | ", RARITY_SUFFIXES, OTHER_SUFFIXES);
     }
 
     @SneakyThrows
@@ -59,17 +65,17 @@ public class TcgPlayerAdapter implements Adapter {
             final Elements items = pkg.getElementsByClass("package-item");
 
             for (final Element item: items) {
-                // Card Name
+                // ---Card Name---
                 String cardName = item.getElementsByAttributeValue("data-testid", "productName").text();
-                final Pattern pattern = Pattern.compile("\\(.*\\)");
-                final Matcher matcher = pattern.matcher(cardName);
-                if (matcher.find() && RARITY_KEYWORDS.contains(matcher.group(0))) {
+                // strip suffixes
+                final Matcher matcher = Pattern.compile("\\(.*\\)").matcher(cardName);
+                if (matcher.find() && ALL_SUFFIXES.contains(matcher.group(0))) {
                     cardName = cardName.replace(matcher.group(0), "").strip();
                 }
-                // Quantity
+                // ---Quantity---
                 final Integer quantity = Integer.parseInt(
                     item.getElementsByClass("add-to-cart__dropdown__overlay").get(0).textNodes().get(0).text().strip());
-                // Price
+                // ---Price---
                 final Double price = Double.parseDouble(item.getElementsByAttributeValue("data-testid", "txtItemPrice")
                     .get(0).text().replace("$", "").strip());
 

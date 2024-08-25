@@ -7,6 +7,7 @@ import java.time.Month;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,17 +21,17 @@ public enum Deck {
     GLADIATOR_BEASTS("Glad Beasts", YearMonth.of(2008, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
     INFERNITY("Infernity", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, false, "INFERNITY_PORTED"),
     QD_DANDYWARRIOR("Quickdraw Dandywarrior", YearMonth.of(2010, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
-    KARAKURI_MACHINA_PLANT("Karakuri Machina Plant", YearMonth.of(2010, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
+    KARAKURI_MACHINA_PLANT("Karakuri Machina Plant", YearMonth.of(2011, Month.MARCH), Format.CROSS_BANLIST, false),
     FUSION_HERO("Fusion HERO", YearMonth.of(2012, Month.MARCH), Format.CROSS_BANLIST, false),
-    LIGHTSWORNS("Dawn of the Lightsworns", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, false),
+    LIGHTSWORNS("Lightsworns", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, false),
     AA_BATTERIES("AA Batteries", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
-    TENGU_PLANT("Tengu Plant", YearMonth.of(2011, Month.MARCH), Format.CROSS_BANLIST, false),
+    TENGU_PLANT("Tengu Plant", YearMonth.of(2011, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
     RANK_UP_GADGETS("Rank-Up Gadgets", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
-    ROCK_STUN("Rock Stun", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
+    ROCK_STUN("Rock Stun", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true, false),
     FROG_MONARCHS("Frog Monarchs", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     SAFFIRA_RITUAL("Saffira Ritual", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     SPELLBOOK_OF_PROPHECY("Spellbook of Prophecy", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, false),
-    PACMAN_STUN("PACMAN Stun", YearMonth.of(2012, Month.MARCH), Format.CROSS_BANLIST, false, false),
+    PACMAN_STUN("PACMAN Stun", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, false),
     QUASAR_SYNCHRON("Quasar Synchron", YearMonth.of(2011, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
     CHAOS_DRAGONS("Chaos Dragons", YearMonth.of(2012, Month.MARCH), Format.CROSS_BANLIST, false),
     MYTHIC_RULERS("Mythic Rulers", YearMonth.of(2013, Month.OCTOBER), Format.CROSS_BANLIST, false),
@@ -38,14 +39,14 @@ public enum Deck {
     DAD_RETURN("DAD Return", YearMonth.of(2008, Month.MARCH), Format.CROSS_BANLIST, false),
     ZOMBIE_TELEDAD("Zombie TeleDAD", YearMonth.of(2008, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
     LEMURIA_FROGS("Lemuria Frogs", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
-    SYLVANS("Sylvans", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
-    GUSTO_DRAGUNITY("Gusto Dragunity", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, false),
-    MAGICAL_DIMEX("Magical Dimex", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
-    WINDUPS("Windups", YearMonth.of(2012, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
-    TRAINS("Trains", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
-    ROCKET_BARRAGE("Rocket Barrage", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
+    SYLVANS("Sylvans", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true, "SYLVANS_2"),
+    DRAGUSTONITY("Dragustonity", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, true),
+    MAGICAL_DIMEX("Magical Dimex", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true, false),
+    WINDUPS("Wind-Ups", YearMonth.of(2012, Month.SEPTEMBER), Format.CROSS_BANLIST, false, "WINDUP_ARTIFACTS"),
+    TRAINS("Trains", YearMonth.of(2014, Month.OCTOBER), Format.CROSS_BANLIST, true),
+    ROCKET_BARRAGE("Rocket Barrage", YearMonth.of(2016, Month.AUGUST), Format.CROSS_BANLIST, true),
     REKINDLING("Rekindling", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, true),
-    AIRBLADE_TURBO("Airblade Turbo", YearMonth.of(2006, Month.SEPTEMBER), Format.CROSS_BANLIST, false),
+    AIRBLADE_TURBO("Airblade Turbo", YearMonth.of(2006, Month.SEPTEMBER), Format.CROSS_BANLIST, LocalDate.of(2019, Month.JULY, 21), false, true, "", false),
     REAPERBOOKS("Reaperbooks", YearMonth.of(2013, Month.MARCH), Format.CROSS_BANLIST, true),
     ALIENS("Aliens", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     DEEZE_FROGS("Deeze Frogs", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, false),
@@ -54,16 +55,19 @@ public enum Deck {
     HIERATIC_RULERS("Hieratic Rulers", YearMonth.of(2014, Month.JANUARY), Format.CROSS_BANLIST, false, "MYTHIC_RULERS"),
     TELLARKNIGHTS("Tellarknights", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2022, Month.APRIL, 14), true),
     MAGISTUS("Magistus", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2022, Month.SEPTEMBER, 4), true),
-    WITCHCRAFTERS("Witchcrafters", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2022, Month.NOVEMBER, 1), true),
+    WITCHCRAFTERS("Witchcrafters", YearMonth.of(2019, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2022, Month.NOVEMBER, 1), true),
     ADAMANCIPATORS("Adamancipators", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, LocalDate.of(2023, Month.JUNE, 17), true),
     PALEOZOIC_FISH("Paleozoic Fish", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     INFERNITY_PORTED("Infernity", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
     CHAOS("Chaos", YearMonth.of(2018, Month.SEPTEMBER), Format.CROSS_BANLIST, true),
     PALEOZOIC_JACK("Paleozoic Jack", YearMonth.of(2024, Month.APRIL), Format.CROSS_BANLIST, false, "PALEOZOIC_FISH"),
+    WINDUP_ARTIFACTS("Wind-Up Artifacts", YearMonth.of(2014, Month.JULY), Format.CROSS_BANLIST, true),
+    SYLVANS_2("Sylvans", YearMonth.of(2015, Month.APRIL), Format.CROSS_BANLIST, true),
     // Modern
     ADAMANCIPATORS_MODERN("Adamancipators", YearMonth.of(2024, Month.JANUARY), Format.MODERN),
     CONSTELLARKNIGHTS("Constellarknights", YearMonth.of(2023, Month.JUNE), Format.MODERN),
     GHOTI("Ghoti", YearMonth.of(2024, Month.APRIL), Format.MODERN),
+    WHITE_WOODS("White Woods", YearMonth.of(2024, Month.APRIL), Format.MODERN),
     // Edison
     ALIEN_CONTROL("Alien Control", YearMonth.of(2010, Month.MARCH), Format.EDISON),
     MACHINA_GEARTOWN("Machina Geartown", YearMonth.of(2010, Month.MARCH), Format.EDISON),
@@ -82,6 +86,7 @@ public enum Deck {
     private final String shared;
     @Getter
     private final boolean active;
+    private final boolean tcg;
 
     Deck(final String name,
          final YearMonth banList,
@@ -127,6 +132,17 @@ public enum Deck {
          final boolean ported,
          final boolean active,
          final String shared) {
+        this(name, banList, format, implementedDate, ported, active, shared, true);
+    }
+
+    Deck(final String name,
+         final YearMonth banList,
+         final Format format,
+         final LocalDate implementedDate,
+         final boolean ported,
+         final boolean active,
+         final String shared,
+         final boolean tcg) {
         this.name = name;
         this.banList = banList;
         this.format = format;
@@ -134,6 +150,7 @@ public enum Deck {
         this.ported = ported;
         this.active = active;
         this.shared = shared;
+        this.tcg = tcg;
     }
 
     @Override
@@ -143,6 +160,7 @@ public enum Deck {
         }
 
         return (banList != null ? banList.format(DateTimeFormatter.ofPattern("yyyy-MM")) : "")
+            + (!tcg ? "O" : "")
             + (ported ? "X" : "")
             + (isNotEmpty(shared) ? "Z" : "")
             + " - " + name;
@@ -150,7 +168,9 @@ public enum Deck {
 
     public static Map<String, Deck> getDeckStringToObjectMapForFormat(final Format format) {
         return Arrays.stream(Deck.values())
-            .filter(deck -> format == deck.getFormat() || deck.getFormat().equals(Format.UNLISTED))
+            .filter(deck -> deck.active)
+            .filter(deck -> format == deck.format || deck.format == Format.UNLISTED)
+            .sorted(Comparator.comparing(Deck::toString))
             .collect(Collectors.toMap(Deck::toString, deck -> deck, (o1, o2) -> o1, LinkedHashMap::new));
     }
 
