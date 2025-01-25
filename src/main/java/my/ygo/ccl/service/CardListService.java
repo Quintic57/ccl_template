@@ -2,6 +2,7 @@ package my.ygo.ccl.service;
 
 import my.ygo.ccl.domain.Card;
 import my.ygo.ccl.domain.Deck;
+import my.ygo.ccl.domain.DeckList;
 import my.ygo.ccl.domain.Format;
 import my.ygo.ccl.domain.Shop;
 import my.ygo.ccl.domain.ShopReport;
@@ -79,14 +80,15 @@ public class CardListService {
 
         // Parse each format by deck
         for (final Map.Entry<Format, Line> entry: formatToLine.entrySet()) {
-            final List<String> linesForFormat = lines.subList(entry.getValue().startLine, entry.getValue().endLine);
+            final List<String> linesForFormat = lines.subList(entry.getValue().startLine, entry.getValue().endLine + 1);
             final Map<Deck, List<Card>> deckToCardList = new LinkedHashMap<>();
-            Deck currentDeck = Optional.ofNullable(Deck.getDeckStringToObjectMapForFormat(entry.getKey()).get(linesForFormat.get(0)))
-                .orElse(Deck.values()[0]);
+            Deck currentDeck =
+                Optional.of(DeckList.getDeckStringToObjectMapForFormat(entry.getKey()).get(linesForFormat.get(0)))
+                .orElse(null);
             for (int i = 1; i < linesForFormat.size(); i++) {
                 final String line = linesForFormat.get(i);
-                if (Deck.getDeckStringToObjectMapForFormat(entry.getKey()).containsKey(line)) {
-                    currentDeck = Deck.getDeckStringToObjectMapForFormat(entry.getKey()).get(line);
+                if (DeckList.getDeckStringToObjectMapForFormat(entry.getKey()).containsKey(line)) {
+                    currentDeck = DeckList.getDeckStringToObjectMapForFormat(entry.getKey()).get(line);
                     continue;
                 }
                 if (!Arrays.stream(Shop.values()).map(Shop::getIdentifier).anyMatch(line::contains)) {
