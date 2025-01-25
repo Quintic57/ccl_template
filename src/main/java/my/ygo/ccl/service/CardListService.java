@@ -56,7 +56,9 @@ public class CardListService {
         final BufferedReader bufferedReader = new BufferedReader(reader);
 
         // Find line numbers for each format
-        final List<String> lines = bufferedReader.lines().collect(Collectors.toList());
+        final List<String> lines = bufferedReader.lines()
+            .map(String::strip) // strip white space for consistency -- IMPORTANT
+            .collect(Collectors.toList());
         final Map<Format, Line> formatToLine = new LinkedHashMap<>();
         Format currentFormat = Optional.ofNullable(Format.getFormatStringToObjectMap().get(lines.get(0)))
             .orElse(Format.CROSS_BANLIST);
@@ -115,7 +117,7 @@ public class CardListService {
             this.startLine = startLine;
         }
 
-        public void setEndLine(int endLine) {
+        public void setEndLine(final int endLine) {
             this.endLine = endLine;
         }
     }
