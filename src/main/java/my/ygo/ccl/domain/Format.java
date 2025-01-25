@@ -45,7 +45,7 @@ public enum Format {
             .filter(format -> format != Format.UNLISTED)
             .collect(Collectors.toMap(
                 format -> format,
-                format -> Deck.getDeckStringToObjectMapForFormat(format).values(),
+                format -> DeckList.getDeckStringToObjectMapForFormat(format).values(),
                 (o1, o2) -> o1,
                 LinkedHashMap::new)
             );
