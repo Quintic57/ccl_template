@@ -1,4 +1,4 @@
-package my.ygo.ccl.dto;
+package my.dw.ccl.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

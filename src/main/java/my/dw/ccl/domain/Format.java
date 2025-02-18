@@ -1,4 +1,4 @@
-package my.ygo.ccl.domain;
+package my.dw.ccl.domain;
 
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;

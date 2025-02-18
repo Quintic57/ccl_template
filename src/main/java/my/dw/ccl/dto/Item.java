@@ -1,4 +1,4 @@
-package my.ygo.ccl.dto;
+package my.dw.ccl.dto;
 
 import lombok.Data;
 
@@ -7,23 +7,25 @@ import java.util.Objects;
 @Data
 public class Item {
 
+    public static String MAIN_VENDOR_NAME = "Main Vendor";
+
     private final String cardName;
 
     private final Integer quantity;
 
     private final Double price;
 
-    private final String packageName;
+    private final String vendorName;
 
     public Item(final String cardName, final Integer quantity) {
         this(cardName, quantity, 0.0, "N/A");
     }
 
-    public Item(final String cardName, final Integer quantity, final Double price, final String packageName) {
+    public Item(final String cardName, final Integer quantity, final Double price, final String vendorName) {
         this.cardName = cardName;
         this.quantity = quantity;
         this.price = price;
-        this.packageName = packageName;
+        this.vendorName = vendorName;
     }
 
     @Override
@@ -38,12 +40,12 @@ public class Item {
 
         final Item item = (Item) o;
 
-        return cardName.equals(item.cardName) && quantity.equals(item.quantity);
+        return cardName.equals(item.cardName) && quantity.equals(item.quantity) && vendorName.equals(item.vendorName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cardName, quantity);
+        return Objects.hash(cardName, quantity, vendorName);
     }
 
     @Override
@@ -59,7 +61,7 @@ public class Item {
         return new Item(item1.getCardName(),
             item1.getQuantity() + item2.getQuantity(),
             item1.getPrice() + item2.getPrice(),
-            "[multiple stores]");
+            String.join(" / ", item1.getVendorName(), item2.getVendorName()));
     }
 
 }

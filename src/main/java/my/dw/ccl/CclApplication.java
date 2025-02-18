@@ -1,8 +1,8 @@
-package my.ygo.ccl;
+package my.dw.ccl;
 
 import lombok.RequiredArgsConstructor;
-import my.ygo.ccl.domain.Format;
-import my.ygo.ccl.service.CardListService;
+import my.dw.ccl.domain.Format;
+import my.dw.ccl.service.CardListService;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

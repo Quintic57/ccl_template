@@ -1,7 +1,7 @@
-package my.ygo.ccl.domain;
+package my.dw.ccl.domain;
 
 import io.micrometer.common.util.StringUtils;
-import my.ygo.ccl.util.CsvSerializer;
+import my.dw.ccl.util.CsvSerializer;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -75,7 +75,8 @@ public class DeckList {
                     Boolean.parseBoolean(m.get("Ported")),
                     Boolean.parseBoolean(m.get("Active")),
                     m.get("Shared"),
-                    Boolean.parseBoolean(m.get("OCG"))
+                    Boolean.parseBoolean(m.get("OCG")),
+                    Boolean.parseBoolean(m.get("Custom"))
                 )
             )
             .toList();

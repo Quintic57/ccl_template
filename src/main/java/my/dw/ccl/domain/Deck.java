@@ -1,4 +1,4 @@
-package my.ygo.ccl.domain;
+package my.dw.ccl.domain;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
@@ -17,16 +17,17 @@ public class Deck {
     @Getter
     private final Format format;
     private final LocalDate implementedDate;
-    private final boolean ported;
     private final String shared;
     @Getter
     private final boolean active;
+    private final boolean ported;
     private final boolean ocg;
+    private final boolean custom;
 
     Deck(final String name,
          final YearMonth banList,
          final Format format) {
-        this(name, banList, format, null, false, true, "", true);
+        this(name, banList, format, null, false, true, "", false, false);
     }
 
     Deck(final String name,
@@ -36,7 +37,8 @@ public class Deck {
          final boolean ported,
          final boolean active,
          final String shared,
-         final boolean ocg) {
+         final boolean ocg,
+         final boolean custom) {
         this.name = name;
         this.banList = banList;
         this.format = format;
@@ -45,6 +47,7 @@ public class Deck {
         this.active = active;
         this.shared = shared;
         this.ocg = ocg;
+        this.custom = custom;
     }
 
     @Override
@@ -54,6 +57,7 @@ public class Deck {
         }
 
         return (banList != null ? banList.format(DateTimeFormatter.ofPattern("yyyy-MM")) : "")
+            + (custom ? "C" : "")
             + (ocg ? "O" : "")
             + (ported ? "X" : "")
             + (isNotEmpty(shared) ? "Z" : "")

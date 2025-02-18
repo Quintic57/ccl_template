@@ -1,7 +1,7 @@
-package my.ygo.ccl.domain;
+package my.dw.ccl.domain;
 
 import lombok.Data;
-import my.ygo.ccl.dto.Item;
+import my.dw.ccl.dto.Item;
 
 import java.util.Arrays;
 import java.util.HashMap;

@@ -1,8 +1,8 @@
-package my.ygo.ccl.adapter.shop;
+package my.dw.ccl.adapter.shop;
 
 import lombok.SneakyThrows;
-import my.ygo.ccl.adapter.Adapter;
-import my.ygo.ccl.dto.Item;
+import my.dw.ccl.adapter.Adapter;
+import my.dw.ccl.dto.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,10 +14,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+
+import static my.dw.ccl.dto.Item.MAIN_VENDOR_NAME;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
 // is obfuscated, for now just pull it from the HTML
@@ -54,13 +54,10 @@ public class CoolstuffAdapter implements Adapter {
             final Double price = Double.parseDouble(cardElement.getElementsByClass("subtotal").get(0).child(0)
                 .text().replace("$", "").strip());
 
-            itemList.add(new Item(cardName, quantity, price, "Coolstuff"));
+            itemList.add(new Item(cardName, quantity, price, MAIN_VENDOR_NAME));
         }
 
-        return itemList
-            .stream()
-            .collect(Collectors.collectingAndThen(
-                Collectors.toMap(Item::getCardName, Function.identity(), Item::mergeItems), m -> new HashSet<>(m.values())));
+        return new HashSet<>(itemList);
     }
 
     @Override
@@ -72,6 +69,11 @@ public class CoolstuffAdapter implements Adapter {
                 .text()
                 .replace("$", "")
                 .strip());
+    }
+
+    @Override
+    public void extractVendors(Set<String> vendors) {
+        // do nothing
     }
 
 }
