@@ -1,7 +1,6 @@
 package my.ygo.ccl;
 
 import lombok.RequiredArgsConstructor;
-import my.ygo.ccl.domain.Format;
 import my.ygo.ccl.service.CardListService;
 
 import java.io.BufferedWriter;

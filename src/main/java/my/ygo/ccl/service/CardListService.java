@@ -42,7 +42,7 @@ public class CardListService {
 
         for (final Shop shop: shopsInCardList) {
             final ShopReport shopReport = new ShopReport(shop);
-            shopReport.enrichWithBuyList(formatToDeckBuyList);
+            shopReport.generateReportBody(formatToDeckBuyList);
             totalCardCount = totalCardCount + shopReport.getTotalCardCount();
             output.append(shopReport.getHeader()).append(shopReport.getBody()).append(shopReport.getFooter());
         }

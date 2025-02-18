@@ -16,4 +16,9 @@ public class DefaultAdapter implements Adapter {
         return 0.0;
     }
 
+    @Override
+    public void extractVendors(final Set<String> vendors) {
+        // do nothing
+    }
+
 }

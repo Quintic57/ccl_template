@@ -10,4 +10,6 @@ public interface Adapter {
 
     Double extractTotalPrice();
 
+    void extractVendors(final Set<String> vendors);
+
 }
