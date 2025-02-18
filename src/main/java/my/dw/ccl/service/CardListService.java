@@ -1,11 +1,11 @@
-package my.ygo.ccl.service;
+package my.dw.ccl.service;
 
-import my.ygo.ccl.domain.Card;
-import my.ygo.ccl.domain.Deck;
-import my.ygo.ccl.domain.DeckList;
-import my.ygo.ccl.domain.Format;
-import my.ygo.ccl.domain.Shop;
-import my.ygo.ccl.domain.ShopReport;
+import my.dw.ccl.domain.Card;
+import my.dw.ccl.domain.Deck;
+import my.dw.ccl.domain.DeckList;
+import my.dw.ccl.domain.Format;
+import my.dw.ccl.domain.Shop;
+import my.dw.ccl.domain.ShopReport;
 
 import java.io.BufferedReader;
 import java.io.IOException;

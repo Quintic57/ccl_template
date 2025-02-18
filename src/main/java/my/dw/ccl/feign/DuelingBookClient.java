@@ -1,4 +1,4 @@
-package my.ygo.ccl.feign;
+package my.dw.ccl.feign;
 
 import feign.RequestLine;
 

@@ -1,8 +1,8 @@
-package my.ygo.ccl.adapter.shop;
+package my.dw.ccl.adapter.shop;
 
 import lombok.SneakyThrows;
-import my.ygo.ccl.adapter.Adapter;
-import my.ygo.ccl.dto.Item;
+import my.dw.ccl.adapter.Adapter;
+import my.dw.ccl.dto.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,7 +17,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static my.ygo.ccl.dto.Item.MAIN_VENDOR_NAME;
+import static my.dw.ccl.dto.Item.MAIN_VENDOR_NAME;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
 // is obfuscated, for now just pull it from the HTML

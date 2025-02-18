@@ -1,7 +1,7 @@
-package my.ygo.ccl.controller;
+package my.dw.ccl.controller;
 
-import my.ygo.ccl.dto.CardListDto;
-import my.ygo.ccl.service.CardListService;
+import my.dw.ccl.dto.CardListDto;
+import my.dw.ccl.service.CardListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

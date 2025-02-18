@@ -1,4 +1,4 @@
-package my.ygo.ccl.domain;
+package my.dw.ccl.domain;
 
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 

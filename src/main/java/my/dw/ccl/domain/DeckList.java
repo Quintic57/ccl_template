@@ -1,7 +1,7 @@
-package my.ygo.ccl.domain;
+package my.dw.ccl.domain;
 
 import io.micrometer.common.util.StringUtils;
-import my.ygo.ccl.util.CsvSerializer;
+import my.dw.ccl.util.CsvSerializer;
 
 import java.io.File;
 import java.nio.file.Files;

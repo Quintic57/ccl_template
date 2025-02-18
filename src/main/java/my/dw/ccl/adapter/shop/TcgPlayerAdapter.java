@@ -1,8 +1,8 @@
-package my.ygo.ccl.adapter.shop;
+package my.dw.ccl.adapter.shop;
 
 import lombok.SneakyThrows;
-import my.ygo.ccl.adapter.Adapter;
-import my.ygo.ccl.dto.Item;
+import my.dw.ccl.adapter.Adapter;
+import my.dw.ccl.dto.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

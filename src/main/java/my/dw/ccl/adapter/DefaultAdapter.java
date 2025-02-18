@@ -1,6 +1,6 @@
-package my.ygo.ccl.adapter;
+package my.dw.ccl.adapter;
 
-import my.ygo.ccl.dto.Item;
+import my.dw.ccl.dto.Item;
 
 import java.util.Set;
 

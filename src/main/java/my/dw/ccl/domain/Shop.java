@@ -1,14 +1,14 @@
-package my.ygo.ccl.domain;
+package my.dw.ccl.domain;
 
-import my.ygo.ccl.adapter.Adapter;
-import my.ygo.ccl.adapter.shop.CoolstuffAdapter;
-import my.ygo.ccl.adapter.DefaultAdapter;
-import my.ygo.ccl.adapter.shop.TcgPlayerAdapter;
+import my.dw.ccl.adapter.Adapter;
+import my.dw.ccl.adapter.shop.CoolstuffAdapter;
+import my.dw.ccl.adapter.DefaultAdapter;
+import my.dw.ccl.adapter.shop.TcgPlayerAdapter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static my.ygo.ccl.dto.Item.MAIN_VENDOR_NAME;
+import static my.dw.ccl.dto.Item.MAIN_VENDOR_NAME;
 
 public enum Shop {
 
