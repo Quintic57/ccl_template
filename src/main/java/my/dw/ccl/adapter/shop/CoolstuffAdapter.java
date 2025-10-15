@@ -2,6 +2,7 @@ package my.dw.ccl.adapter.shop;
 
 import lombok.SneakyThrows;
 import my.dw.ccl.adapter.Adapter;
+import my.dw.ccl.domain.Vendor;
 import my.dw.ccl.dto.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -11,13 +12,13 @@ import org.jsoup.select.Elements;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static my.dw.ccl.dto.Item.MAIN_VENDOR_NAME;
+import java.util.stream.Collectors;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
 // is obfuscated, for now just pull it from the HTML
@@ -32,7 +33,7 @@ public class CoolstuffAdapter implements Adapter {
     }
 
     @Override
-    public Set<Item> extractPackages() {
+    public Collection<Item> extractPackages() {
         final List<Item> itemList = new ArrayList<>();
         final Elements cartElement = document.getElementsByClass("row cart-row main-container");
 
@@ -54,10 +55,13 @@ public class CoolstuffAdapter implements Adapter {
             final Double price = Double.parseDouble(cardElement.getElementsByClass("subtotal").get(0).child(0)
                 .text().replace("$", "").strip());
 
-            itemList.add(new Item(cardName, quantity, price, MAIN_VENDOR_NAME));
+            itemList.add(new Item(cardName, quantity, price, new Vendor()));
         }
 
-        return new HashSet<>(itemList);
+        return itemList
+            .stream()
+            .collect(Collectors.toMap(Item::getCardAndVendorName, Function.identity(), Item::mergeItems))
+            .values();
     }
 
     @Override

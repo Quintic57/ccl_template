@@ -1,5 +1,7 @@
 package my.dw.ccl.domain;
 
+import lombok.Getter;
+
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -16,7 +18,8 @@ public enum Format {
     GOAT("GOAT", YearMonth.of(2005, 4)),
     UNLISTED("Unlisted");
 
-    private String name;
+    @Getter
+    private final String name;
 
     private final YearMonth banList;
 

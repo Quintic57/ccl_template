@@ -43,7 +43,7 @@ public class DeckList {
                 new File("src/main/resources/decklist/decklist_gt.csv"),
                 Format.GOAT)
                 : List.of();
-        // KEYWORDS
+        // KEYWORDS - TODO: Change this so each Format has a [Staples], [Unlisted] Deck
         final List<Deck> keywords = List.of(
             new Deck("[Staples]", YearMonth.of(2002, Month.MARCH), Format.UNLISTED),
             new Deck("[Unlisted]", YearMonth.of(2002, Month.MARCH), Format.UNLISTED)
