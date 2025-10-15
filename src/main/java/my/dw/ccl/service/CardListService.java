@@ -1,25 +1,22 @@
 package my.dw.ccl.service;
 
-import my.dw.ccl.domain.Card;
+import lombok.Setter;
+import my.dw.ccl.domain.CardInList;
+import my.dw.ccl.domain.CardDto;
 import my.dw.ccl.domain.Deck;
 import my.dw.ccl.domain.DeckList;
 import my.dw.ccl.domain.Format;
 import my.dw.ccl.domain.Shop;
+import my.dw.ccl.domain.CardInCart;
 import my.dw.ccl.domain.ShopReport;
+import my.dw.ccl.domain.Vendor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /*
@@ -32,28 +29,75 @@ public class CardListService {
 
     public String generateCardReport(final String input) throws IOException {
         final StringBuilder output = new StringBuilder();
-        final Reader reader = new StringReader(input);
-        int totalCardCount = 0;
-
-        final Map<Format, Map<Deck, List<Card>>> formatToDeckBuyList = convertInput(reader);
-        final Set<Shop> shopsInCardList = Arrays.stream(Shop.values())
+        final Set<Shop> shopsInBuyList = Arrays.stream(Shop.values())
             .filter(shop -> input.contains(shop.getIdentifier()))
             .collect(Collectors.toCollection(LinkedHashSet::new));
+        // convert input string -> buyList Map
+        final Map<Deck, List<CardDto>> buyList = convertInput(new StringReader(input));
 
-        for (final Shop shop: shopsInCardList) {
+        int grandTotalCardCount = 0;
+        for (final Shop shop: shopsInBuyList) {
+            // create copy of buyList to not overwrite existing Map
+            final Map<Deck, List<CardInList>> shopBuyList = new LinkedHashMap<>();
+            // filter only for cards with shop identifier
+            buyList.forEach((deck, cardList) -> {
+                final List<CardInList> filteredCardList = cardList
+                    .stream()
+                    .filter(card -> card.getQuantityMap().containsKey(shop))
+                    .map(card -> new CardInList(card.getName(), card.getQuantityMap().get(shop)))
+                    .toList();
+                if (!filteredCardList.isEmpty()) {
+                    shopBuyList.put(deck, filteredCardList);
+                }
+            });
+            // check if cards are present in cart
+            final List<CardInList> cardsInList = shopBuyList.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .toList();
+            final Map<String, CardInCart> cardsInCart = shop.getAdapter().extractPackages()
+                .stream()
+                .map(item -> new CardInCart(
+                    item.getCardName(),
+                    new HashMap<>(Map.of(item.getVendor(), item.getQuantity())),
+                    new HashMap<>(Map.of(item.getVendor(), item.getPrice()))
+                ))
+                .collect(Collectors.toMap(CardInCart::getName, Function.identity(), CardInCart::merge, LinkedHashMap::new));
+
+            final Map<String, Integer> notInCart = checkIfCardsAreInCart(cardsInList, cardsInCart);
+            final Map<Vendor, Map<String, Integer>> notInList = new HashMap<>();
+            for (final String cardName: cardsInCart.keySet()) {
+                cardsInCart.get(cardName).getQuantityMap()
+                    .entrySet()
+                    .stream()
+                    .filter(entry -> entry.getValue() > 0)
+                    .forEach(entry -> {
+                        if (notInList.containsKey(entry.getKey())) {
+                            notInList.get(entry.getKey()).put(cardName, entry.getValue());
+                        } else {
+                            notInList.put(entry.getKey(), new HashMap<>(Map.of(cardName, entry.getValue())));
+                        }
+
+                    });
+            }
+
+            // generate report
+            final Map<Vendor, Integer> cardCount = new HashMap<>();
             final ShopReport shopReport = new ShopReport(shop);
-            shopReport.generateReportBody(formatToDeckBuyList);
-            totalCardCount = totalCardCount + shopReport.getTotalCardCount();
+            shopReport.generateReportHeader();
+            shopReport.generateReportBody(shopBuyList, notInList, cardCount);
+            shopReport.generateReportFooter(notInCart, cardCount.values().stream().mapToInt(count -> count).sum());
             output.append(shopReport.getHeader()).append(shopReport.getBody()).append(shopReport.getFooter());
+            grandTotalCardCount = grandTotalCardCount + cardCount.values().stream().mapToInt(count -> count).sum();
         }
-        output.append("Total Card Count: " + totalCardCount + "\n");
-        output.append("Grand Total: $\n");
 
+        output.append("Grand Total Card Count: ").append(grandTotalCardCount).append("\n");
+        output.append("Grand Total: $").append("\n");
         return output.toString();
     }
 
-    private Map<Format, Map<Deck, List<Card>>> convertInput(final Reader reader) throws IOException {
-        final Map<Format, Map<Deck, List<Card>>> formatToDeckBuyList = new LinkedHashMap<>();
+    private Map<Deck, List<CardDto>> convertInput(final Reader reader) throws IOException {
+        final Map<Deck, List<CardDto>> buyList = new LinkedHashMap<>();
         final BufferedReader bufferedReader = new BufferedReader(reader);
 
         // Find line numbers for each format
@@ -81,7 +125,7 @@ public class CardListService {
         // Parse each format by deck
         for (final Map.Entry<Format, Line> entry: formatToLine.entrySet()) {
             final List<String> linesForFormat = lines.subList(entry.getValue().startLine, entry.getValue().endLine + 1);
-            final Map<Deck, List<Card>> deckToCardList = new LinkedHashMap<>();
+            final Map<Deck, List<CardDto>> deckBuyList = new LinkedHashMap<>();
             Deck currentDeck =
                 Optional.of(DeckList.getDeckStringToObjectMapForFormat(entry.getKey()).get(linesForFormat.get(0)))
                 .orElse(null);
@@ -95,33 +139,74 @@ public class CardListService {
                     continue;
                 }
 
-                final Card card = Optional.ofNullable(Card.convertFromLine(line))
+                final CardDto card = Optional.ofNullable(CardDto.convertFromLine(line))
                     .orElseThrow(() -> new IllegalStateException("Card can not be null if this line contains a shop unique identifier"));
-                if (deckToCardList.containsKey(currentDeck)) {
-                    deckToCardList.get(currentDeck).add(card);
+                if (deckBuyList.containsKey(currentDeck)) {
+                    deckBuyList.get(currentDeck).add(card);
                 } else {
-                    deckToCardList.put(currentDeck, new ArrayList<>(Collections.singletonList(card)));
+                    deckBuyList.put(currentDeck, new ArrayList<>(Collections.singletonList(card)));
                 }
             }
-            formatToDeckBuyList.put(entry.getKey(), deckToCardList);
+            buyList.putAll(deckBuyList);
         }
 
         bufferedReader.close();
-        return formatToDeckBuyList;
+        return buyList;
+    }
+
+    private Map<String, Integer> checkIfCardsAreInCart(final List<CardInList> cardsInList,
+                                                       final Map<String, CardInCart> cardsInCart) {
+        final Map<String, Integer> notInCart = new HashMap<>();
+
+        for (final CardInList cardInList : cardsInList) {
+            if (!cardsInCart.containsKey(cardInList.getName())) {
+                continue;
+            } else if (cardsInCart.get(cardInList.getName()).getTotalQuantity() == 0) {
+                notInCart.put(
+                    cardInList.getName(),
+                    notInCart.getOrDefault(cardInList.getName(), 0) + cardInList.getQuantity()
+                );
+                continue;
+            }
+
+            int targetQuantity = cardInList.getQuantity();
+            final CardInCart cardInCart = cardsInCart.get(cardInList.getName());
+            for (final Map.Entry<Vendor, Integer> entry: cardInCart.getQuantityMap().entrySet()) {
+                final int cartQuantity = entry.getValue();
+                if (cartQuantity == 0) { // Skip vendors that have already assigned to different decks
+                    continue;
+                }
+
+                if (cartQuantity >= targetQuantity) {
+                    cardInCart.removeQuantity(entry.getKey(), targetQuantity);
+                    cardInList.addQuantityInCart(entry.getKey(), targetQuantity);
+                    targetQuantity = 0;
+                    break;
+                } else {
+                    cardInCart.removeQuantity(entry.getKey(), cartQuantity);
+                    cardInList.addQuantityInCart(entry.getKey(), cartQuantity);
+                    targetQuantity = targetQuantity - cartQuantity;
+                }
+            }
+
+            if (targetQuantity > 0) {
+                notInCart.put(cardInList.getName(), notInCart.getOrDefault(cardInList.getName(), 0) + targetQuantity);
+            }
+        }
+
+        return notInCart;
     }
 
     // [startLine:endLine]
     public class Line {
         int startLine;
+        @Setter
         int endLine;
 
         public Line(final int startLine) {
             this.startLine = startLine;
         }
 
-        public void setEndLine(final int endLine) {
-            this.endLine = endLine;
-        }
     }
 
 }

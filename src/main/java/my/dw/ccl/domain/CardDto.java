@@ -11,22 +11,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Data
-public class Card {
+public class CardDto {
 
     private final String name;
 
     private final Map<Shop, Integer> quantityMap;
 
-    public Card(final String name) {
+    public CardDto(final String name) {
         this.name = name;
         this.quantityMap = new HashMap<>();
     }
 
-    public Item convertToItemForShop(final Shop shop) {
-        return new Item(this.name, this.quantityMap.get(shop));
-    }
-
-    public static Card convertFromLine(final String line) {
+    public static CardDto convertFromLine(final String line) {
         final Matcher lineMatcher = Pattern.compile(String.join("",
             "\\s*\\dx\\s*(.*?)([",
             Arrays.stream(Shop.values()).map(Shop::getIdentifier).collect(Collectors.joining("")),
@@ -42,7 +38,7 @@ public class Card {
             cardName = cardName.replace(packNameMatcher.group(0), "").strip();
         }
 
-        final Card card = new Card(cardName);
+        final CardDto card = new CardDto(cardName);
         for (final Shop shop: Shop.values()) {
             final String shopUID = shop.getIdentifier();
 

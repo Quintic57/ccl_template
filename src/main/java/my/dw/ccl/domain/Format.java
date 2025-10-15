@@ -1,5 +1,7 @@
 package my.dw.ccl.domain;
 
+import lombok.Getter;
+
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -13,10 +15,10 @@ public enum Format {
     CROSS_BANLIST("Cross-Banlist"),
     MODERN("Modern"),
     EDISON("Edison", YearMonth.of(2010, 4)),
-    GOAT("GOAT", YearMonth.of(2005, 4)),
-    UNLISTED("Unlisted");
+    GOAT("GOAT", YearMonth.of(2005, 4));
 
-    private String name;
+    @Getter
+    private final String name;
 
     private final YearMonth banList;
 
@@ -42,7 +44,6 @@ public enum Format {
     public static String getStringOfDecksSortedByFormat() {
         final StringBuilder sb = new StringBuilder();
         final Map<Format, Collection<Deck>> formatDeckMap = Arrays.stream(Format.values())
-            .filter(format -> format != Format.UNLISTED)
             .collect(Collectors.toMap(
                 format -> format,
                 format -> DeckList.getDeckStringToObjectMapForFormat(format).values(),

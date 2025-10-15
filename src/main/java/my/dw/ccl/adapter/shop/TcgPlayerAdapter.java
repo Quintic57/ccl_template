@@ -2,6 +2,7 @@ package my.dw.ccl.adapter.shop;
 
 import lombok.SneakyThrows;
 import my.dw.ccl.adapter.Adapter;
+import my.dw.ccl.domain.Vendor;
 import my.dw.ccl.dto.Item;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -12,12 +13,14 @@ import org.springframework.stereotype.Component;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
 // is obfuscated, for now just pull it from the HTML
@@ -54,7 +57,7 @@ public class TcgPlayerAdapter implements Adapter {
     }
 
     @Override
-    public Set<Item> extractPackages() {
+    public Collection<Item> extractPackages() {
         final List<Item> itemList = new ArrayList<>();
         final Elements packageElement = document.getElementsByClass("package");
         packageElement.remove(0);
@@ -83,11 +86,14 @@ public class TcgPlayerAdapter implements Adapter {
                 final Double price = Double.parseDouble(item.getElementsByAttributeValue("data-testid", "txtItemPrice")
                     .get(0).text().replace("$", "").strip());
 
-                itemList.add(new Item(cardName, quantity, price, vendorName));
+                itemList.add(new Item(cardName, quantity, price, new Vendor(vendorName)));
             }
         }
 
-        return new HashSet<>(itemList);
+        return itemList
+            .stream()
+            .collect(Collectors.toMap(Item::getCardAndVendorName, Function.identity(), Item::mergeItems))
+            .values();
     }
 
     @Override

@@ -2,12 +2,13 @@ package my.dw.ccl.adapter;
 
 import my.dw.ccl.dto.Item;
 
+import java.util.Collection;
 import java.util.Set;
 
 public class DefaultAdapter implements Adapter {
 
     @Override
-    public Set<Item> extractPackages() {
+    public Collection<Item> extractPackages() {
         return Set.of();
     }
 

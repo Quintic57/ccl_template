@@ -7,6 +7,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Paths;
+import java.sql.Array;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.YearMonth;
@@ -19,44 +20,34 @@ public class DeckList {
     public static final List<Deck> DECK_LIST;
 
     static {
-        final List<Deck> crossBanList =
-            Files.exists(Paths.get("src/main/resources/decklist/decklist_cb.csv"), LinkOption.NOFOLLOW_LINKS)
-                ? readFromCSVAndConvert(
-                    new File("src/main/resources/decklist/decklist_cb.csv"),
-                    Format.CROSS_BANLIST)
-                : List.of();
-        final List<Deck> modern =
-            Files.exists(Paths.get("src/main/resources/decklist/decklist_md.csv"), LinkOption.NOFOLLOW_LINKS)
-                ? readFromCSVAndConvert(
-                new File("src/main/resources/decklist/decklist_md.csv"),
-                Format.MODERN)
-                : List.of();
-        final List<Deck> edison =
-            Files.exists(Paths.get("src/main/resources/decklist/decklist_ed.csv"), LinkOption.NOFOLLOW_LINKS)
-                ? readFromCSVAndConvert(
-                new File("src/main/resources/decklist/decklist_ed.csv"),
-                Format.EDISON)
-                : List.of();
-        final List<Deck> goat =
-            Files.exists(Paths.get("src/main/resources/decklist/decklist_gt.csv"), LinkOption.NOFOLLOW_LINKS)
-                ? readFromCSVAndConvert(
-                new File("src/main/resources/decklist/decklist_gt.csv"),
-                Format.GOAT)
-                : List.of();
-        // KEYWORDS
-        final List<Deck> keywords = List.of(
-            new Deck("[Staples]", YearMonth.of(2002, Month.MARCH), Format.UNLISTED),
-            new Deck("[Unlisted]", YearMonth.of(2002, Month.MARCH), Format.UNLISTED)
+        //TODO: Move to config
+        final Map<Format, String> formatFileNames = Map.of(
+            Format.CROSS_BANLIST, "decklist_cb.csv",
+            Format.MODERN, "decklist_md.csv",
+            Format.EDISON, "decklist_ed.csv",
+            Format.GOAT, "decklist_gt.csv"
         );
-        DECK_LIST = Stream.of(crossBanList, modern, edison, goat, keywords)
-            .flatMap(Collection::stream)
+
+        DECK_LIST = Arrays.stream(Format.values())
+            .map(format -> {
+                final List<Deck> decks =
+                    Files.exists(Paths.get("src/main/resources/decklist/" + formatFileNames.get(format)), LinkOption.NOFOLLOW_LINKS)
+                        ? readFromCSVAndConvert(
+                            new File("src/main/resources/decklist/" + formatFileNames.get(format)),
+                            format)
+                        : new ArrayList<>();
+                decks.add(new Deck("[Staples]", YearMonth.of(2002, Month.MARCH), format));
+                decks.add(new Deck("[Unlisted]", YearMonth.of(2002, Month.MARCH), format));
+                return decks;
+            })
+            .flatMap(List::stream)
             .toList();
     }
 
     public static Map<String, Deck> getDeckStringToObjectMapForFormat(final Format format) {
         return DECK_LIST.stream()
             .filter(Deck::isActive)
-            .filter(deck -> format == deck.getFormat() || deck.getFormat() == Format.UNLISTED)
+            .filter(deck -> format == deck.getFormat())
             .sorted(Comparator.comparing(Deck::toString))
             .collect(Collectors.toMap(Deck::toString, deck -> deck, (o1, o2) -> o1, LinkedHashMap::new));
     }
@@ -79,7 +70,7 @@ public class DeckList {
                     Boolean.parseBoolean(m.get("Custom"))
                 )
             )
-            .toList();
+            .collect(Collectors.toList());
     }
 
 }
