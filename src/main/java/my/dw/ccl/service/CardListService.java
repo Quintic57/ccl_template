@@ -124,15 +124,16 @@ public class CardListService {
 
         // Parse each format by deck
         for (final Map.Entry<Format, Line> entry: formatToLine.entrySet()) {
+            final Map<String, Deck> formatDeckMap = DeckList.getDeckStringToObjectMapForFormat(entry.getKey());
             final List<String> linesForFormat = lines.subList(entry.getValue().startLine, entry.getValue().endLine + 1);
             final Map<Deck, List<CardDto>> deckBuyList = new LinkedHashMap<>();
             Deck currentDeck =
-                Optional.of(DeckList.getDeckStringToObjectMapForFormat(entry.getKey()).get(linesForFormat.get(0)))
+                Optional.of(formatDeckMap.get(linesForFormat.get(0)))
                 .orElse(null);
             for (int i = 1; i < linesForFormat.size(); i++) {
                 final String line = linesForFormat.get(i);
-                if (DeckList.getDeckStringToObjectMapForFormat(entry.getKey()).containsKey(line)) {
-                    currentDeck = DeckList.getDeckStringToObjectMapForFormat(entry.getKey()).get(line);
+                if (formatDeckMap.containsKey(line)) {
+                    currentDeck = formatDeckMap.get(line);
                     continue;
                 }
                 if (!Arrays.stream(Shop.values()).map(Shop::getIdentifier).anyMatch(line::contains)) {
@@ -159,9 +160,8 @@ public class CardListService {
         final Map<String, Integer> notInCart = new HashMap<>();
 
         for (final CardInList cardInList : cardsInList) {
-            if (!cardsInCart.containsKey(cardInList.getName())) {
-                continue;
-            } else if (cardsInCart.get(cardInList.getName()).getTotalQuantity() == 0) {
+            if (!cardsInCart.containsKey(cardInList.getName())
+                || cardsInCart.get(cardInList.getName()).getTotalQuantity() == 0) {
                 notInCart.put(
                     cardInList.getName(),
                     notInCart.getOrDefault(cardInList.getName(), 0) + cardInList.getQuantity()

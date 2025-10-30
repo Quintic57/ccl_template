@@ -38,12 +38,14 @@ public class TcgPlayerAdapter implements Adapter {
             ", ",
             Set.of(
                 "(PCR)",
-                "(PUR)",
                 "(Platinum Secret Rare)",
+                "(PUR)",
                 "(Quarter Century Secret Rare)",
                 "(Secret Rare)",
+                "(SR)",
+                "(Super Rare)",
                 "(UR)",
-                "(SR)"
+                "(Ultra Rare)"
             )
         );
         OTHER_SUFFIXES = String.join(", ", Set.of("(A)", "(B)", "(C)", "(Alternate Art)"));

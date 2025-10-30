@@ -36,8 +36,10 @@ public class DeckList {
                             new File("src/main/resources/decklist/" + formatFileNames.get(format)),
                             format)
                         : new ArrayList<>();
-                decks.add(new Deck("[Staples]", YearMonth.of(2002, Month.MARCH), format));
-                decks.add(new Deck("[Unlisted]", YearMonth.of(2002, Month.MARCH), format));
+                if (format != Format.CROSS_BANLIST) {
+                    decks.add(new Deck("[Staples]", YearMonth.of(2002, Month.MARCH), format));
+                    decks.add(new Deck("[Unlisted]", YearMonth.of(2002, Month.MARCH), format));
+                }
                 return decks;
             })
             .flatMap(List::stream)
