@@ -1,31 +1,66 @@
 package my.dw.ccl.service;
 
-import lombok.Setter;
-import my.dw.ccl.domain.CardInList;
-import my.dw.ccl.domain.CardDto;
-import my.dw.ccl.domain.Deck;
-import my.dw.ccl.domain.DeckList;
-import my.dw.ccl.domain.Format;
-import my.dw.ccl.domain.Shop;
-import my.dw.ccl.domain.CardInCart;
-import my.dw.ccl.domain.ShopReport;
-import my.dw.ccl.domain.Vendor;
-
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import my.dw.ccl.domain.CardDto;
+import my.dw.ccl.domain.CardInCart;
+import my.dw.ccl.domain.CardInList;
+import my.dw.ccl.domain.deck.Deck;
+import my.dw.ccl.domain.Format;
+import my.dw.ccl.domain.Shop;
+import my.dw.ccl.domain.ShopReport;
+import my.dw.ccl.domain.Vendor;
+import org.springframework.stereotype.Service;
 
 /*
  - If card name matches exactly 1 in the shop, list it as included
  - If card name does not match anything in the shop, list it as not included in shop
  - If card exists in shop but not in list, list it as [Unlisted]
  */
-//@Service
+@Service
+@RequiredArgsConstructor
 public class CardListService {
+
+    private final DeckListService deckListService;
+
+    // TODO: Temporary. Refactor logic to receive card list in body of request instead of manual text file
+    public void generateCardReport() {
+        try {
+            final String cardList = Files.readString(Path.of("src/main/resources/in/card_list.txt"));
+            final String cardReport = generateCardReport(cardList);
+            final String cardReportName = "Report_"
+                    + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())
+                    + ".txt";
+            writeToFile(cardReport, cardReportName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String generateCardReport(final String input) throws IOException {
         final StringBuilder output = new StringBuilder();
@@ -106,7 +141,7 @@ public class CardListService {
             .collect(Collectors.toList());
         final Map<Format, Line> formatToLine = new LinkedHashMap<>();
         Format currentFormat = Optional.ofNullable(Format.getFormatStringToObjectMap().get(lines.get(0)))
-            .orElse(Format.CROSS_BANLIST);
+            .orElse(Format.YGO_CROSS_BANLIST);
         formatToLine.put(currentFormat, new Line(1));
         for (int i = 1; i < lines.size(); i++) {
             final String line = lines.get(i);
@@ -124,7 +159,7 @@ public class CardListService {
 
         // Parse each format by deck
         for (final Map.Entry<Format, Line> entry: formatToLine.entrySet()) {
-            final Map<String, Deck> formatDeckMap = DeckList.getDeckStringToObjectMapForFormat(entry.getKey());
+            final Map<String, Deck> formatDeckMap = getDeckStringToObjectMapForFormat(entry.getKey());
             final List<String> linesForFormat = lines.subList(entry.getValue().startLine, entry.getValue().endLine + 1);
             final Map<Deck, List<CardDto>> deckBuyList = new LinkedHashMap<>();
             Deck currentDeck =
@@ -195,6 +230,23 @@ public class CardListService {
         }
 
         return notInCart;
+    }
+
+    private Map<String, Deck> getDeckStringToObjectMapForFormat(final Format format) {
+        // TODO: Game value will be passed via method arguments
+        return deckListService.getActiveDecksByFormat(format)
+            .stream()
+            .sorted(Comparator.comparing(Deck::toString))
+            .collect(Collectors.toMap(Deck::toString, deck -> deck, (o1, o2) -> o1, LinkedHashMap::new));
+    }
+
+    private void writeToFile(final String output, final String fileName) throws IOException {
+        final Path outDir = Paths.get("target/out/");
+        Files.createDirectories(outDir);
+
+        final BufferedWriter out = new BufferedWriter(new FileWriter("target/out/" + fileName));
+        out.write(output);
+        out.close();
     }
 
     // [startLine:endLine]
