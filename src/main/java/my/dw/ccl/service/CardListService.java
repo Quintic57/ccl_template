@@ -10,11 +10,14 @@ import my.dw.ccl.domain.Shop;
 import my.dw.ccl.domain.CardInCart;
 import my.dw.ccl.domain.ShopReport;
 import my.dw.ccl.domain.Vendor;
+import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,8 +27,32 @@ import java.util.stream.Collectors;
  - If card name does not match anything in the shop, list it as not included in shop
  - If card exists in shop but not in list, list it as [Unlisted]
  */
-//@Service
+@Service
 public class CardListService {
+
+    // TODO: Temporary. Refactor logic to receive card list in body of request instead of manual text file
+    public void generateCardReport() {
+        try {
+            final String cardList = Files.readString(Path.of("src/main/resources/in/card_list.txt"));
+            final String cardReport = generateCardReport(cardList);
+            final String cardReportName = "Report_"
+                    + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())
+                    + ".txt";
+            writeToFile(cardReport, cardReportName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    // TODO: Using GoogleSheetsNotebookAdapter, change this to read directly from google API instead of from a local CSV file
+    public void generateDeckList() {
+        try {
+            final String deckList = Format.getStringOfDecksSortedByFormat();
+            writeToFile(deckList, "deck_list.txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public String generateCardReport(final String input) throws IOException {
         final StringBuilder output = new StringBuilder();
@@ -195,6 +222,15 @@ public class CardListService {
         }
 
         return notInCart;
+    }
+
+    private void writeToFile(final String output, final String fileName) throws IOException {
+        final Path outDir = Paths.get("target/out/");
+        Files.createDirectories(outDir);
+
+        final BufferedWriter out = new BufferedWriter(new FileWriter("target/out/" + fileName));
+        out.write(output);
+        out.close();
     }
 
     // [startLine:endLine]

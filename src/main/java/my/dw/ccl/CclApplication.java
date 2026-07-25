@@ -3,6 +3,8 @@ package my.dw.ccl;
 import lombok.RequiredArgsConstructor;
 import my.dw.ccl.domain.Format;
 import my.dw.ccl.service.CardListService;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -20,36 +22,16 @@ $ curl -X POST https://www.duelingbook.com/php-scripts/login-user.php -d "userna
 100   225    0   163  100    62    259     98 --:--:-- --:--:-- --:--:--   357{"action":"Logged in","user_id":524430,"username":"Quintic57","password":"98717b28e7b5a09e4ec7a7524c83e120ada09814","admin":false,"firstLogin":false,"logins":null}
 */
 
-@RequiredArgsConstructor
+@SpringBootApplication
 public class CclApplication {
 
-    // TODO: Temporary. Once converted to spring app, this should just have the SpringBootApplication annotation,
-    // and the logic to read input should be delineated to another service, also should just return the output as
-    // opposed to writing it to a file
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
+        SpringApplication.run(CclApplication.class, args);
         /*
         final DuelingBookClient duelingBookClient = Feign.builder()
             .target(DuelingBookClient.class, "https://www.duelingbook.com");
         duelingBookClient.login();
          */
-
-        final CardListService cardListService = new CardListService();
-
-        final String cardList = Files.readString(Path.of("src/main/resources/in/card_list.txt"));
-        final String cardReport = cardListService.generateCardReport(cardList);
-        final String cardReportName = "Report_"
-            + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())
-            + ".txt";
-        writeToFile(cardReport, cardReportName);
-
-//        final String deckList = Format.getStringOfDecksSortedByFormat();
-//        writeToFile(deckList, "deck_list.txt");
-    }
-
-    private static void writeToFile(final String output, final String fileName) throws IOException {
-        final BufferedWriter out = new BufferedWriter(new FileWriter("src/main/resources/out/" + fileName));
-        out.write(output);
-        out.close();
     }
 
 }
