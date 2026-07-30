@@ -1,6 +1,6 @@
-package my.dw.ccl.adapter;
+package my.dw.ccl.adapter.shop;
 
-import my.dw.ccl.dto.Item;
+import my.dw.ccl.adapter.shop.dto.Item;
 
 import java.util.Collection;
 import java.util.Set;

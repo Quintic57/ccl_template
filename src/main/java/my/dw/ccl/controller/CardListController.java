@@ -3,6 +3,7 @@ package my.dw.ccl.controller;
 import lombok.RequiredArgsConstructor;
 import my.dw.ccl.service.CardListService;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /*
@@ -12,18 +13,14 @@ TODO: Rebuild project to pull lists from DB. Connect to wss://duel.duelingbook.c
    Also, add another controller function that will automatically sync duelingbook and google drive directory*/
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/card-report")
 public class CardListController {
 
     private final CardListService cardListService;
 
-    @PostMapping("/generate-report")
+    @PostMapping("/generate")
     public void generateCardReport() {
         cardListService.generateCardReport();
-    }
-
-    @PostMapping("/generate-deck-list")
-    public void generateDeckList() {
-        cardListService.generateDeckList();
     }
 
 }

@@ -1,61 +1,59 @@
 package my.dw.ccl.domain;
 
-import lombok.Getter;
-
+import com.fasterxml.jackson.annotation.JsonCreator;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
+@Getter
 public enum Format {
 
-    CROSS_BANLIST("Cross-Banlist"),
-    MODERN("Modern"),
-    EDISON("Edison", YearMonth.of(2010, 4)),
-    GOAT("GOAT", YearMonth.of(2005, 4));
+    // YGO
+    YGO_CROSS_BANLIST(Game.YUGIOH, "Cross-Banlist"),
+    YGO_MODERN(Game.YUGIOH, "Modern"),
+    YGO_EDISON(Game.YUGIOH, "Edison", YearMonth.of(2010, 4)),
+    YGO_GOAT(Game.YUGIOH, "GOAT", YearMonth.of(2005, 4)),
 
-    @Getter
+    // SDE
+    SDE_CLASSIC(Game.SHADOWVERSE_EVOLVE, "Classic");
+
+    private final Game game;
+
     private final String name;
 
-    private final YearMonth banList;
+    private final YearMonth dateRange;
 
-    Format(final String name) {
-        this(name, null);
+    Format(final Game game, final String name) {
+        this(game, name, null);
     }
 
-    Format(final String name, final YearMonth banList) {
+    Format(final Game game, final String name, final YearMonth dateRange) {
+        this.game = game;
         this.name = name;
-        this.banList = banList;
+        this.dateRange = dateRange;
     }
 
     @Override
     public String toString() {
-        return name + (banList != null ? " (" + banList.format(DateTimeFormatter.ofPattern("yyyy-MM")) + ")" : "");
+        return name + (dateRange != null ? " (" + dateRange.format(DateTimeFormatter.ofPattern("yyyy-MM")) + ")" : "");
+    }
+
+    @JsonCreator
+    public static Format fromGameAndName(final Game game, final String name) {
+        return Arrays.stream(Format.values())
+            .filter(format -> format.name.equalsIgnoreCase(name) && format.game == game)
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(
+                String.format("Invalid format: %s or game: %s", name, game)));
     }
 
     public static Map<String, Format> getFormatStringToObjectMap() {
         return Arrays.stream(Format.values())
             .collect(Collectors.toMap(Format::toString, format -> format, (o1, o2) -> o1, LinkedHashMap::new));
-    }
-
-    public static String getStringOfDecksSortedByFormat() {
-        final StringBuilder sb = new StringBuilder();
-        final Map<Format, Collection<Deck>> formatDeckMap = Arrays.stream(Format.values())
-            .collect(Collectors.toMap(
-                format -> format,
-                format -> DeckList.getDeckStringToObjectMapForFormat(format).values(),
-                (o1, o2) -> o1,
-                LinkedHashMap::new)
-            );
-        for (final Format format: formatDeckMap.keySet()) {
-            sb.append(format).append("\n");
-            formatDeckMap.get(format).stream()
-                .forEach(deck -> sb.append("    ").append(deck).append("\n"));
-        }
-        return sb.toString();
     }
 
 }

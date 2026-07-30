@@ -1,18 +1,7 @@
 package my.dw.ccl;
 
-import lombok.RequiredArgsConstructor;
-import my.dw.ccl.domain.Format;
-import my.dw.ccl.service.CardListService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /*
 destr@DESKTOP-PSASKJP MINGW64 ~

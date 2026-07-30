@@ -1,4 +1,4 @@
-package my.dw.ccl.dto;
+package my.dw.ccl.adapter.shop.dto;
 
 import lombok.Data;
 import my.dw.ccl.domain.Vendor;

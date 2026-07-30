@@ -1,6 +1,7 @@
 package my.dw.ccl.domain;
 
 import lombok.Data;
+import my.dw.ccl.domain.deck.Deck;
 
 @Data
 public class CardInReport {
