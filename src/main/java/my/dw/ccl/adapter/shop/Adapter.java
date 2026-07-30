@@ -1,4 +1,4 @@
-package my.dw.ccl.adapter;
+package my.dw.ccl.adapter.shop;
 
 import my.dw.ccl.dto.Item;
 

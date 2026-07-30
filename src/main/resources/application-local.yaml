@@ -1,5 +1,13 @@
+app:
+  spread-sheet-id: "1dVmecQl6_PZ3m_BKRYhXAFvEPP1oiEnkzWgtR1ovbPQ"
 server:
   max-http-request-header-size: 8KB
   port: 8081
   servlet:
     context-path: /api
+spring:
+  cache:
+    type: caffeine
+    cache-names: decks
+    caffeine:
+        spec: maximumSize=500,expireAfterAccess=30m

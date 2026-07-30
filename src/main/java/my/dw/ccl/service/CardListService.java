@@ -1,6 +1,8 @@
 package my.dw.ccl.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import my.dw.ccl.adapter.GoogleSheetsNotebookAdapter;
 import my.dw.ccl.domain.CardInList;
 import my.dw.ccl.domain.CardDto;
 import my.dw.ccl.domain.Deck;
@@ -10,6 +12,7 @@ import my.dw.ccl.domain.Shop;
 import my.dw.ccl.domain.CardInCart;
 import my.dw.ccl.domain.ShopReport;
 import my.dw.ccl.domain.Vendor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -28,7 +31,10 @@ import java.util.stream.Collectors;
  - If card exists in shop but not in list, list it as [Unlisted]
  */
 @Service
+@RequiredArgsConstructor
 public class CardListService {
+
+    private final CacheService cacheService;
 
     // TODO: Temporary. Refactor logic to receive card list in body of request instead of manual text file
     public void generateCardReport() {
@@ -47,9 +53,16 @@ public class CardListService {
     // TODO: Using GoogleSheetsNotebookAdapter, change this to read directly from google API instead of from a local CSV file
     public void generateDeckList() {
         try {
-            final String deckList = Format.getStringOfDecksSortedByFormat();
-            writeToFile(deckList, "deck_list.txt");
-        } catch (IOException e) {
+            final StringBuilder sb = new StringBuilder();
+
+            for (final Format format: Format.values()) {
+                sb.append(format).append("\n");
+                cacheService.getDecksByFormat(format).stream()
+                    .forEach(deck -> sb.append("    ").append(deck).append("\n"));
+            }
+
+            writeToFile(sb.toString(), "deck_list.txt");
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }

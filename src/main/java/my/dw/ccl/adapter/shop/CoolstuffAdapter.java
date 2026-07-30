@@ -1,7 +1,6 @@
 package my.dw.ccl.adapter.shop;
 
 import lombok.SneakyThrows;
-import my.dw.ccl.adapter.Adapter;
 import my.dw.ccl.domain.Vendor;
 import my.dw.ccl.dto.Item;
 import org.jsoup.Jsoup;

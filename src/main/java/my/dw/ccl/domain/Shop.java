@@ -1,7 +1,7 @@
 package my.dw.ccl.domain;
 
-import my.dw.ccl.adapter.Adapter;
-import my.dw.ccl.adapter.DefaultAdapter;
+import my.dw.ccl.adapter.shop.Adapter;
+import my.dw.ccl.adapter.shop.DefaultAdapter;
 import my.dw.ccl.adapter.shop.CoolstuffAdapter;
 import my.dw.ccl.adapter.shop.TcgPlayerAdapter;
 

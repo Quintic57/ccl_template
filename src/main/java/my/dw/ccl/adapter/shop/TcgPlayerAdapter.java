@@ -1,7 +1,6 @@
 package my.dw.ccl.adapter.shop;
 
 import lombok.SneakyThrows;
-import my.dw.ccl.adapter.Adapter;
 import my.dw.ccl.domain.Vendor;
 import my.dw.ccl.dto.Item;
 import org.jsoup.Jsoup;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 
 //TODO: In the future, this should be able to pull the cart information just from the user context, but since that code
 // is obfuscated, for now just pull it from the HTML
-@Component
+//@Component
 public class TcgPlayerAdapter implements Adapter {
 
     private final Document document;
