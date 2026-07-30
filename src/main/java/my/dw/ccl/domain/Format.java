@@ -1,5 +1,6 @@
 package my.dw.ccl.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 import java.time.YearMonth;
@@ -36,26 +37,17 @@ public enum Format {
         return name + (banList != null ? " (" + banList.format(DateTimeFormatter.ofPattern("yyyy-MM")) + ")" : "");
     }
 
+    @JsonCreator
+    public static Format fromName(final String name) {
+        return Arrays.stream(Format.values())
+            .filter(format -> format.name.equalsIgnoreCase(name))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("Invalid format name: " + name));
+    }
+
     public static Map<String, Format> getFormatStringToObjectMap() {
         return Arrays.stream(Format.values())
             .collect(Collectors.toMap(Format::toString, format -> format, (o1, o2) -> o1, LinkedHashMap::new));
-    }
-
-    public static String getStringOfDecksSortedByFormat() {
-        final StringBuilder sb = new StringBuilder();
-        final Map<Format, Collection<Deck>> formatDeckMap = Arrays.stream(Format.values())
-            .collect(Collectors.toMap(
-                format -> format,
-                format -> DeckList.getDeckStringToObjectMapForFormat(format).values(),
-                (o1, o2) -> o1,
-                LinkedHashMap::new)
-            );
-        for (final Format format: formatDeckMap.keySet()) {
-            sb.append(format).append("\n");
-            formatDeckMap.get(format).stream()
-                .forEach(deck -> sb.append("    ").append(deck).append("\n"));
-        }
-        return sb.toString();
     }
 
 }

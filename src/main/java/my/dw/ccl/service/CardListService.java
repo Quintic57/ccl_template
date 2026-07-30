@@ -1,26 +1,41 @@
 package my.dw.ccl.service;
 
-import lombok.Setter;
-import my.dw.ccl.domain.CardInList;
-import my.dw.ccl.domain.CardDto;
-import my.dw.ccl.domain.Deck;
-import my.dw.ccl.domain.DeckList;
-import my.dw.ccl.domain.Format;
-import my.dw.ccl.domain.Shop;
-import my.dw.ccl.domain.CardInCart;
-import my.dw.ccl.domain.ShopReport;
-import my.dw.ccl.domain.Vendor;
-import org.springframework.stereotype.Service;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import my.dw.ccl.domain.CardDto;
+import my.dw.ccl.domain.CardInCart;
+import my.dw.ccl.domain.CardInList;
+import my.dw.ccl.domain.Deck;
+import my.dw.ccl.domain.Format;
+import my.dw.ccl.domain.Shop;
+import my.dw.ccl.domain.ShopReport;
+import my.dw.ccl.domain.Vendor;
+import org.springframework.stereotype.Service;
 
 /*
  - If card name matches exactly 1 in the shop, list it as included
@@ -28,7 +43,10 @@ import java.util.stream.Collectors;
  - If card exists in shop but not in list, list it as [Unlisted]
  */
 @Service
+@RequiredArgsConstructor
 public class CardListService {
+
+    private final DeckListService deckListService;
 
     // TODO: Temporary. Refactor logic to receive card list in body of request instead of manual text file
     public void generateCardReport() {
@@ -39,16 +57,6 @@ public class CardListService {
                     + DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDate.now())
                     + ".txt";
             writeToFile(cardReport, cardReportName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    // TODO: Using GoogleSheetsNotebookAdapter, change this to read directly from google API instead of from a local CSV file
-    public void generateDeckList() {
-        try {
-            final String deckList = Format.getStringOfDecksSortedByFormat();
-            writeToFile(deckList, "deck_list.txt");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -151,7 +159,7 @@ public class CardListService {
 
         // Parse each format by deck
         for (final Map.Entry<Format, Line> entry: formatToLine.entrySet()) {
-            final Map<String, Deck> formatDeckMap = DeckList.getDeckStringToObjectMapForFormat(entry.getKey());
+            final Map<String, Deck> formatDeckMap = getDeckStringToObjectMapForFormat(entry.getKey());
             final List<String> linesForFormat = lines.subList(entry.getValue().startLine, entry.getValue().endLine + 1);
             final Map<Deck, List<CardDto>> deckBuyList = new LinkedHashMap<>();
             Deck currentDeck =
@@ -222,6 +230,13 @@ public class CardListService {
         }
 
         return notInCart;
+    }
+
+    private Map<String, Deck> getDeckStringToObjectMapForFormat(final Format format) {
+        return deckListService.getActiveDecksByFormat(format)
+            .stream()
+            .sorted(Comparator.comparing(Deck::toString))
+            .collect(Collectors.toMap(Deck::toString, deck -> deck, (o1, o2) -> o1, LinkedHashMap::new));
     }
 
     private void writeToFile(final String output, final String fileName) throws IOException {
